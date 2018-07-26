@@ -1,0 +1,61 @@
+{
+	"manifest-version": 1,
+
+	"name": "core-ui",
+	"databox-type": "app",
+	"version": "0.3.0",
+
+	"description": "An app that offers the default databox ui and core functionality.",
+	"author": "Tosh Brown <Anthony.Brown@nottingham.ac.uk>",
+	"license": "MIT",
+	"tags": [
+		"UI",
+		"databoox"
+	],
+
+	"homepage": "https://github.com/me-box/core-ui",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/me-box/core-ui"
+	},
+
+	"packages": [
+		{
+			"name": "UI",
+			"purpose": "Display the UI for core databox functionality",
+			"install": "required",
+			"risks": "None.",
+			"benefits": "You can see the UI and install new components!",
+			"datastores": ["CM_API","APPS","DRIVERS"]
+		}
+	],
+	"allowed-combinations":[ ],
+	"datasources": [
+		{
+			"type": "databox:container-manager:api",
+			"required": true,
+			"name": "container-manager:api",
+			"clientid": "CM_API",
+			"granularities": []
+		},
+		{
+			"type": "databox:manifests:app",
+			"required": true,
+			"name": "databox Apps",
+			"clientid": "APPS",
+			"granularities": []
+		},
+		{
+			"type": "databox:manifests:driver",
+			"required": true,
+			"name": "databox Drivers",
+			"clientid": "DRIVERS",
+			"granularities": []
+		}
+	],
+
+	"export-whitelist": [],
+
+	"resource-requirements": {}
+
+}
