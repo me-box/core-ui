@@ -1,0 +1,89 @@
+{
+	"manifest-version": 1,
+
+	"name": "app-os-monitor",
+	"databox-type": "app",
+	"version": "0.3.0",
+
+	"description": "An app in golang to plot the output of the os monitor driver.",
+	"author": "Tosh Brown <Anthony.Brown@nottingham.ac.uk>",
+	"license": "MIT",
+	"tags": [
+		"template",
+		"app",
+		"nodejs"
+	],
+
+	"homepage": "https://github.com/me-box/app-os-monitor",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/me-box/app-os-monitor"
+	},
+
+	"packages": [
+		{
+			"name": "OS monitor Plotter",
+			"purpose": "To visualize your databox load and free memory",
+			"install": "required",
+			"risks": "None.",
+			"benefits": "You can see the data!",
+			"datastores": [ "loadavg1","loadavg5","loadavg15","freemem","loadavg1Structured","freememStructured" ]
+		}
+	],
+	"allowed-combinations":[ ],
+	"datasources": [
+		{
+			"type": "loadavg1",
+			"required": true,
+			"name": "loadavg1",
+			"clientid": "loadavg1",
+			"granularities": []
+		},
+		{
+			"type": "loadavg5",
+			"required": true,
+			"name": "loadavg5",
+			"clientid": "loadavg5",
+			"granularities": []
+		},
+		{
+			"type": "loadavg15",
+			"required": true,
+			"name": "loadavg15",
+			"clientid": "loadavg15",
+			"granularities": []
+		},
+		{
+			"type": "freemem",
+			"required": true,
+			"name": "freemem",
+			"clientid": "freemem",
+			"granularities": []
+		},
+		{
+			"type": "loadavg1Structured",
+			"required": true,
+			"name": "loadavg1Structured",
+			"clientid": "loadavg1Structured",
+			"granularities": []
+		},
+		{
+			"type": "freememStructured",
+			"required": true,
+			"name": "freememStructured",
+			"clientid": "freememStructured",
+			"granularities": []
+		}
+	],
+
+	"export-whitelist": [
+		{
+		  "url": "https://export.amar.io/",
+		  "description": "Exports the data to amar.io"
+		}
+	  ],
+
+	"resource-requirements": {
+	}
+
+}

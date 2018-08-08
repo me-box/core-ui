@@ -1,0 +1,27 @@
+{
+	"manifest-version": 1,
+
+	"name": "driver-os-monitor",
+	"version": "0.3.0",
+
+	"description": "A Databox driver to monitor the local os",
+	"author": "Anthony Brown <Anthony.Brown@nottingham.ac.uk> ()",
+	"license": "MIT",
+
+	"databox-type":"driver",
+
+	"tags": [
+		"monitor",
+		"os"
+	],
+
+	"homepage": "https://github.com/me-box/driver-os-monitor",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/me-box/driver-os-monitor.git"
+	},
+
+	"resource-requirements": {
+    	"store":"core-store"
+	}
+}

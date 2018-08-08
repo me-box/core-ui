@@ -1,0 +1,4 @@
+{
+ "drivers": [ "driver-sensingkit",  "driver-os-monitor"],
+ "apps": ["app-os-monitor"]
+}

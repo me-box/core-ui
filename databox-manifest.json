@@ -51,6 +51,13 @@
 			"name": "databox Drivers",
 			"clientid": "DRIVERS",
 			"granularities": []
+		},
+		{
+			"type": "databox:manifests:all",
+			"required": true,
+			"name": "databox manifests",
+			"clientid": "ALL",
+			"granularities": []
 		}
 	],
 

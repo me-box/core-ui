@@ -17,6 +17,7 @@ type config struct {
 	cmDataDataSource    libDatabox.DataSourceMetadata
 	appsDatasource      libDatabox.DataSourceMetadata
 	driverDatasource    libDatabox.DataSourceMetadata
+	allManifests        libDatabox.DataSourceMetadata
 	cmStoreClient       *libDatabox.CoreStoreClient
 	manifestStoreClient *libDatabox.CoreStoreClient
 }
@@ -28,6 +29,7 @@ func main() {
 	cmDataDataSource, _, _ := libDatabox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_CM_DATA"))
 	appsDatasource, DATABOX_ZMQ_ENDPOINT_APP, _ := libDatabox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_APPS"))
 	driverDatasource, _, _ := libDatabox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_DRIVERS"))
+	allManifests, _, _ := libDatabox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_ALL"))
 
 	//create a config object to pass to handlers
 	cfg := config{
@@ -35,13 +37,23 @@ func main() {
 		cmDataDataSource:    cmDataDataSource,
 		appsDatasource:      appsDatasource,
 		driverDatasource:    driverDatasource,
+		allManifests:        allManifests,
 		cmStoreClient:       libDatabox.NewDefaultCoreStoreClient(DATABOX_ZMQ_ENDPOINT_CM),
 		manifestStoreClient: libDatabox.NewDefaultCoreStoreClient(DATABOX_ZMQ_ENDPOINT_APP),
 	}
 
 	//setup webserver routes
 	router := mux.NewRouter()
-	router.HandleFunc("/ui", getUI(&cfg)).Methods("GET")
+	router.HandleFunc("/status", statusEndpoint).Methods("GET")
+	router.HandleFunc("/ui/api/appStore", getApps(&cfg)).Methods("GET")
+	router.HandleFunc("/ui/api/containerStatus", containerStatus(&cfg)).Methods("GET")
+	router.HandleFunc("/ui/api/dataSources", dataSources(&cfg)).Methods("GET")
+	router.HandleFunc("/ui/api/manifest/{name}", getManifest(&cfg)).Methods("GET")
+	router.HandleFunc("/ui/api/install", install(&cfg)).Methods("POST")
+	router.HandleFunc("/ui/api/uninstall", uninstall(&cfg)).Methods("POST")
+	router.HandleFunc("/ui/api/restart", restart(&cfg)).Methods("POST")
+	router.HandleFunc("/ui/{appstore|datasources|settings|databoxstatus|install|restart|uninstall|view|login}", serveIndex).Methods("GET")
+	router.PathPrefix("/ui").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir("./www"))))
 
 	tlsConfig := &tls.Config{
 		PreferServerCipherSuites: true,
@@ -61,4 +73,8 @@ func main() {
 	libDatabox.Info("Waiting for https requests ....")
 	log.Fatal(srv.ListenAndServeTLS(libDatabox.GetHttpsCredentials(), libDatabox.GetHttpsCredentials()))
 	libDatabox.Info("Exiting ....")
+}
+
+func serveIndex(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./www/index.html")
 }
