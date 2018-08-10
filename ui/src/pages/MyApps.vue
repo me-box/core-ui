@@ -41,34 +41,21 @@ export default {
     clearInterval(this.timerID)
   },
   methods: {
-    loadData: (_this) => {
-      //console.log("loadData")
-      fetch('/core-ui/ui/api/containerStatus', {credentials: "same-origin"})
-      .then((response) => {
-            if (response.status == 401) {
-                localStorage.setItem('databoxAuthenticated', false)
-                this.$router.push('/')
-                return
-            }
-            return response.json()
-        })
-        .then(json => {
-            _this.status = json;
-        })
-        .catch(()=>{
-            //console.log("loadData: error using test data")
-            _this.status = testdata;
-        });
+    loadData: function () {
+      this.ApiGetRequest('/core-ui/ui/api/containerStatus',testdata)
+      .then(json => {
+        this.status = json;
+      })
     },
-     GoToUI: function (appName) {
-        this.$router.push("view?ui="+appName)
-     },
-     Restart: function (appName) {
-       alert("Install " + appName)
-     },
-     Uninstall: function (appName) {
-       alert("Uninstall" + appName)
-     }
+    GoToUI: function (appName) {
+      this.$router.push("view?ui="+appName)
+    },
+    Restart: function (appName) {
+      alert("Install " + appName)
+    },
+    Uninstall: function (appName) {
+      alert("Uninstall" + appName)
+    }
   }
 }
 

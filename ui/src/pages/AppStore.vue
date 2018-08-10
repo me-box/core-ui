@@ -45,40 +45,26 @@ export default {
     return { apps: [], drivers:[], timerID: 0}
   },
   mounted() {
-    let _this = this
 
-    this.loadData(_this);
-
+    this.loadData()
     this.timerID = setInterval(() => {
-      this.loadData(_this);
+      this.loadData();
     }, 5000);
   },
   destroyed: function () {
     clearInterval(this.timerID)
   },
   methods: {
-    loadData: (_this) => {
-      fetch('/core-ui/ui/api/appStore', {credentials: "same-origin"})
-      .then((response) => {
-            if (response.status == 401) {
-                localStorage.setItem('databoxAuthenticated', false)
-                this.$router.push('/')
-                return
-            }
-            return response.json()
-        })
-        .then(json => {
-            _this.apps = json.apps;
-            _this.drivers = json.drivers;
-        })
-        .catch(()=>{
-            _this.apps = testdata.apps;
-            _this.drivers = testdata.drivers;
-        });
+    loadData: function () {
+      this.ApiGetRequest("/core-ui/ui/api/appStore", testdata)
+      .then((data) => {
+          this.apps = data.apps;
+          this.drivers = data.drivers;
+      })
     },
-     installApp: function (appName) {
-       this.$router.push("Install?manifest="+appName)
-     }
+    installApp: function (appName) {
+      this.$router.push("Install?manifest="+appName)
+    }
   }
 }
 

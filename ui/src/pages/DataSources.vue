@@ -28,36 +28,20 @@ export default {
       }
   },
   mounted() {
-    let _this = this
-
-    this.loadData(_this);
-
+    this.loadData();
     this.timerID = setInterval(() => {
-      this.loadData(_this);
+      this.loadData();
     }, 5000);
   },
   destroyed: function () {
     clearInterval(this.timerID)
   },
   methods: {
-    loadData: (_this) => {
-      //console.log("loadData")
-      fetch('https://127.0.0.1/core-ui/ui/api/dataSources', {credentials: "same-origin"})
-      .then((response) => {
-            if (response.status == 401) {
-                localStorage.setItem('databoxAuthenticated', false)
-                this.$router.push('/')
-                return
-            }
-            return response.json()
-        })
-        .then(json => {
-            _this.dataSources = json;
-        })
-        .catch(()=>{
-            //console.log("loadData: error using test data")
-            _this.dataSources = testdata;
-        });
+    loadData: function () {
+      this.ApiGetRequest('/core-ui/ui/api/dataSources',testdata)
+      .then(json => {
+        this.dataSources = json;
+      })
     },
      GoToUI: function (appName) {
        alert("GoToUI " + appName)

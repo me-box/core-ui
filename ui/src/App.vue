@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="logo"><img  src="./assets/logo.png"></div>
-    <div v-bind="authenticated" id="menu">
+    <div v-bind="authenticated" v-if="authenticated" id="menu">
       <ul>
         <li v-on:click="goto('/')">Home</li>
         <li v-on:click="goto('AppStore')">App Store</li>

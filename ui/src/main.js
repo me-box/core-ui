@@ -46,3 +46,30 @@ new Vue({
   router,
   render: h => h(App)
 }).$mount('#app')
+
+Vue.mixin({
+  methods: {
+    ApiGetRequest: function (url, cannedData) {
+      let _this = this
+      return fetch(url, {
+        credentials: "same-origin"
+      })
+      .then((response) => {
+            return response.json()
+      })
+      .then(json => {
+        return json;
+      })
+      .catch((err)=>{
+          console.log(err)
+          let devmode = localStorage.getItem('dev')
+          if (devmode == "true") {
+            return cannedData
+          } else {
+            localStorage.setItem('databoxAuthenticated', false)
+            _this.$router.push("/login")
+          }
+      });
+    }
+  }
+})
