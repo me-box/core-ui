@@ -27,12 +27,11 @@ export default {
   },
   created: function () {
     let authenticated = localStorage.getItem('databoxAuthenticated')
-    console.log("authenticated=",authenticated, typeof(authenticated), authenticated === "true")
     if(authenticated === "true") {
       this.authenticated = true
-      //this.$router.push('/')
     } else {
       this.$router.push('/login')
+      return
     }
   },
   methods: {

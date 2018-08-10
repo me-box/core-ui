@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+
 	libDatabox "github.com/toshbrown/lib-go-databox"
 )
 
@@ -44,6 +45,10 @@ func main() {
 
 	//setup webserver routes
 	router := mux.NewRouter()
+	//websocket API
+	router.HandleFunc("/ui/api/ws", ProcessWS(&cfg))
+
+	//HTTPS API
 	router.HandleFunc("/status", statusEndpoint).Methods("GET")
 	router.HandleFunc("/ui/api/appStore", getApps(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/containerStatus", containerStatus(&cfg)).Methods("GET")

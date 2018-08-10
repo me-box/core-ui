@@ -23,6 +23,7 @@ export default {
   },
   methods: {
       login: function () {
+          let _this = this
             fetch('https://'+this.url+'/api/connect', {
                     method: "GET",
                     credentials: "include",
@@ -31,18 +32,32 @@ export default {
                         'Authorization':"Token " + this.password,
                     },
                 })
-                .then( (response) => {
-                    console.log(response)
-                    if (response.status != 200) {
-                        localStorage.setItem('databoxAuthenticated', false)
-                        alert("Error trying to log in. Sorry.")
-                    } else {
-                        localStorage.setItem('databoxURL', this.url)
-                        localStorage.setItem('databoxAuthenticated', true)
+                .then((response) => {
+                    return response.text()
+                })
+                .then( (body) => {
+                    console.log(body)
+                    if (body == "connected") {
+                        localStorage.setItem('databoxAuthenticated', "true")
+                        this.$parent.authenticated = "true"
                         this.$router.push("/")
+                    } else {
+                        return Promise.reject("Auth failed")
                     }
                 })
-                .catch(error => console.error(error));
+                .catch((error) => {
+                    let devmode = localStorage.getItem('dev')
+                    if (devmode == "true") {
+                        localStorage.setItem('databoxURL', this.url)
+                        localStorage.setItem('databoxAuthenticated', "true")
+                        this.$parent.authenticated = "true"
+                        this.$router.push("/")
+                    } else {
+                        this.$parent.authenticated = "false"
+                        localStorage.setItem('databoxAuthenticated', "false")
+                        alert("Error trying to log in. Sorry.")
+                    }
+                });
       }
   }
 }

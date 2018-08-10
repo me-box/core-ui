@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
+	libDatabox "github.com/toshbrown/lib-go-databox"
 )
 
 func statusEndpoint(w http.ResponseWriter, req *http.Request) {
@@ -169,4 +172,38 @@ func dataSources(config *config) func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `%s`, datasources)
 	}
+}
+
+func ProcessWS(config *config) func(w http.ResponseWriter, r *http.Request) {
+	//cfg := config
+	var upgrader = websocket.Upgrader{
+		HandshakeTimeout: time.Second * 2,
+		CheckOrigin: func(r *http.Request) bool {
+			return true //this trusts all origins (bad) should only trust the databox proxy
+		},
+		EnableCompression: false,
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		c, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			libDatabox.Err("upgrade:" + err.Error())
+			return
+		}
+		defer c.Close()
+		for {
+			mt, message, err := c.ReadMessage()
+			if err != nil {
+				libDatabox.Err("read:" + err.Error())
+				break
+			}
+			libDatabox.Info("recv: " + string(message))
+			err = c.WriteMessage(mt, message)
+			if err != nil {
+				libDatabox.Err("read:" + err.Error())
+				break
+			}
+		}
+	}
+
 }

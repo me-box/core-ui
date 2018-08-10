@@ -14,6 +14,7 @@ import DataSources from './pages/DataSources.vue'
 import Install from './pages/Install.vue'
 import ViewAppUI from './pages/ViewAppUI.vue'
 import Login from './pages/Login.vue'
+import WStest from './pages/WStest.vue'
 
 //FontAwesome
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -39,6 +40,7 @@ const router = new VueRouter({
     { path: '/Install', component: Install },
     { path: '/view', component: ViewAppUI },
     { path: '/login', component: Login },
+    { path: '/wstest', component: WStest },
   ]
 })
 
@@ -61,12 +63,12 @@ Vue.mixin({
         return json;
       })
       .catch((err)=>{
-          console.log(err)
           let devmode = localStorage.getItem('dev')
           if (devmode == "true") {
             return cannedData
           } else {
-            localStorage.setItem('databoxAuthenticated', false)
+            localStorage.setItem('databoxAuthenticated', "false")
+            _this.$parent.authenticated = "false"
             _this.$router.push("/login")
           }
       });

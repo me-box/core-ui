@@ -17,6 +17,12 @@
 export default {
   name: 'home',
   props: {},
+  mounted: function () {
+    let devmode = localStorage.getItem('dev')
+    if (this.$parent.authenticated == "false" && devmode != "true") {
+      this.$router.push('login')
+    }
+  }
 }
 
 </script>

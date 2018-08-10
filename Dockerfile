@@ -5,6 +5,7 @@ RUN apk update && apk add pkgconfig build-base bash autoconf automake libtool ge
 #COPY . . if you update the libs below build with --no-cache
 RUN go get -d github.com/gorilla/mux
 RUN go get -d github.com/toshbrown/lib-go-databox
+RUN go get github.com/gorilla/websocket
 COPY . .
 RUN addgroup -S databox && adduser -S -g databox databox
 RUN GGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s -w' -o app /src/*.go
