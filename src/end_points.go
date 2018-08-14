@@ -27,7 +27,7 @@ func restart(config *config) func(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, `{"error": %s}`, "Reading body")
 			return
 		}
-		fmt.Println("[restart] data received", body)
+		fmt.Println("[restart] data received", string(body))
 
 		err = cfg.cmStoreClient.KVJSON.Write(cfg.cmAPIDataSource.DataSourceID, "restart", body)
 		if err != nil {
@@ -54,7 +54,7 @@ func uninstall(config *config) func(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, `{"error": %s}`, "Reading body")
 			return
 		}
-		fmt.Println("[uninstall] data received", body)
+		fmt.Println("[uninstall] data received", string(body))
 
 		err = cfg.cmStoreClient.KVJSON.Write(cfg.cmAPIDataSource.DataSourceID, "uninstall", body)
 		if err != nil {
@@ -82,7 +82,7 @@ func install(config *config) func(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, `{"error": %s}`, "Reading body")
 			return
 		}
-		fmt.Println("[install] data received", body)
+		fmt.Println("[install] data received", string(body))
 
 		err = cfg.cmStoreClient.KVJSON.Write(cfg.cmAPIDataSource.DataSourceID, "install", body)
 		if err != nil {
