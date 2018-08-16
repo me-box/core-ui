@@ -75,3 +75,10 @@ Vue.mixin({
     }
   }
 })
+
+//Add in the event listener to redirect oauth requests
+window.addEventListener('message', (event) => {
+	if (event.data.type === 'databox_oauth_redirect') {
+		window.location.href = event.data.url;
+	}
+});
