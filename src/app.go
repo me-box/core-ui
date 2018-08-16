@@ -57,6 +57,8 @@ func main() {
 	router.HandleFunc("/ui/api/install", install(&cfg)).Methods("POST")
 	router.HandleFunc("/ui/api/uninstall", uninstall(&cfg)).Methods("POST")
 	router.HandleFunc("/ui/api/restart", restart(&cfg)).Methods("POST")
+	router.HandleFunc("/ui/api/qrcode.png", qrcode(&cfg)).Methods("GET")
+	router.HandleFunc("/ui/cert.pem", certPub(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/{appstore|datasources|settings|databoxstatus|install|restart|uninstall|view|login}", serveIndex).Methods("GET")
 	router.PathPrefix("/ui").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir("./www"))))
 

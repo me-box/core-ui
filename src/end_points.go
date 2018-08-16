@@ -16,6 +16,57 @@ func statusEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("active\n"))
 }
 
+func qrcode(config *config) func(w http.ResponseWriter, r *http.Request) {
+	cfg := config
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		qrcode, err := cfg.cmStoreClient.KVBin.Read(cfg.cmDataDataSource.DataSourceID, "qrcode.png")
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, `{"error": %s}`, "Reading body")
+			return
+		}
+		w.Header().Set("Content-Type", "image/png")
+		w.WriteHeader(http.StatusOK)
+		w.Write(qrcode)
+	}
+}
+
+func certPub(config *config) func(w http.ResponseWriter, r *http.Request) {
+	cfg := config
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		crtpub, err := cfg.cmStoreClient.KVBin.Read(cfg.cmDataDataSource.DataSourceID, "cert.pem")
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, `{"error": %s}`, "Reading body")
+			return
+		}
+		w.Header().Set("Content-Type", "application/x-pem-file")
+		w.WriteHeader(http.StatusOK)
+		w.Write(crtpub)
+	}
+}
+
+func certPubDer(config *config) func(w http.ResponseWriter, r *http.Request) {
+	cfg := config
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		crtpubder, err := cfg.cmStoreClient.KVBin.Read(cfg.cmDataDataSource.DataSourceID, "cert.der")
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, `{"error": %s}`, "Reading body")
+			return
+		}
+		w.Header().Set("Content-Type", "application/x-x509-ca-cert")
+		w.WriteHeader(http.StatusOK)
+		w.Write(crtpubder)
+	}
+}
+
 func restart(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
