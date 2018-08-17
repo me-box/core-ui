@@ -10,7 +10,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	libDatabox "github.com/toshbrown/lib-go-databox"
+	libDatabox "github.com/me-box/lib-go-databox"
 )
 
 type config struct {

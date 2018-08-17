@@ -7,12 +7,12 @@ all: build-amd64 build-arm64v8 publish-images
 
 .PHONY: build-amd64
 build-amd64:
-	cd ui && npm run build
+	cd ui && npm install && npm run build
 	docker build -t $(DEFAULT_REG)/$(IMAGE_NAME)-amd64:$(VERSION) . $(OPTS)
 
 .PHONY: build-arm64v8
 build-arm64v8:
-	cd ui && npm run build
+	cd ui && npm install && npm run build
 	docker build -t $(DEFAULT_REG)/$(IMAGE_NAME)-arm64v8:$(VERSION) -f Dockerfile-arm64v8 .  $(OPTS)
 
 .PHONY: publish-images

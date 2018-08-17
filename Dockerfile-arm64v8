@@ -8,7 +8,7 @@ WORKDIR /
 
 #COPY . . if you update the libs below build with --no-cache
 RUN go get -d github.com/gorilla/mux
-RUN go get -d github.com/toshbrown/lib-go-databox
+RUN go get -d github.com/me-box/lib-go-databox
 RUN go get github.com/gorilla/websocket
 COPY . .
 RUN addgroup -S databox && adduser -S -g databox databox

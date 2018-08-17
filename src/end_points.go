@@ -9,7 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
-	libDatabox "github.com/toshbrown/lib-go-databox"
+	libDatabox "github.com/me-box/lib-go-databox"
 )
 
 func statusEndpoint(w http.ResponseWriter, req *http.Request) {
