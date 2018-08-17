@@ -79,4 +79,8 @@ div {
     display: block;
     text-align: left;
 }
+li {
+    float: left;
+    padding: .5em;
+}
 </style>
