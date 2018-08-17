@@ -62,7 +62,7 @@ Vue.mixin({
       .then(json => {
         return json;
       })
-      .catch((err)=>{
+      .catch(()=>{
           let devmode = localStorage.getItem('dev')
           if (devmode == "true") {
             return cannedData
