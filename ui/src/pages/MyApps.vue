@@ -5,9 +5,10 @@
       Hear is a list of the installed and running Apps.
     </p>
     <ul v-if="status">
-      <li v-for="item in status"  v-if="item.type == 'app' || item.type == 'driver'" :key="item.name" v-on:click="GoToUI(item.name)">
+      <li v-for="item in status"  v-if="(item.type == 'app' || item.type == 'driver') && item.name != 'core-ui'" :key="item.name" v-on:click="GoToUI(item.name)">
         <icon v-bind:name="item.name"
               v-bind:displayName="true"
+              v-bind:updating="(item.state != 'running')"
               :key="item"
         />
       </li>
@@ -41,10 +42,10 @@ export default {
     clearInterval(this.timerID)
   },
   methods: {
-    loadData: function () {
-      this.ApiGetRequest('/core-ui/ui/api/containerStatus',testdata)
+    loadData: function (_this) {
+      _this.ApiGetRequest('/core-ui/ui/api/containerStatus',testdata)
       .then(json => {
-        this.status = json;
+        _this.status = json;
       })
     },
     GoToUI: function (appName) {
