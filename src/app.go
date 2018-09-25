@@ -45,8 +45,6 @@ func main() {
 
 	//setup webserver routes
 	router := mux.NewRouter()
-	//websocket API
-	router.HandleFunc("/ui/api/ws", ProcessWS(&cfg))
 
 	//HTTPS API
 	router.HandleFunc("/status", statusEndpoint).Methods("GET")
@@ -72,9 +70,9 @@ func main() {
 
 	srv := &http.Server{
 		Addr:         ":8080",
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		IdleTimeout:  15 * time.Second,
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 30 * time.Second,
+		IdleTimeout:  30 * time.Second,
 		TLSConfig:    tlsConfig,
 		Handler:      router,
 	}

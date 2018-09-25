@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/gorilla/websocket"
 	libDatabox "github.com/me-box/lib-go-databox"
 )
 
@@ -179,15 +177,18 @@ func getManifest(config *config) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
+		libDatabox.Info("Getting app manifest " + vars["name"])
 		manifest, err := cfg.manifestStoreClient.KVJSON.Read(cfg.allManifests.DataSourceID, vars["name"])
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
 			return
 		}
+		libDatabox.Info("Got app manifest " + vars["name"])
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `%s`, manifest)
+		libDatabox.Info("All done for " + vars["name"])
 	}
 }
 
@@ -212,49 +213,17 @@ func dataSources(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		libDatabox.Info("Getting dataSources ")
 		datasources, err := cfg.cmStoreClient.KVJSON.Read(cfg.cmDataDataSource.DataSourceID, "dataSources")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
 			return
 		}
-
+		libDatabox.Info("Got dataSources")
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `%s`, datasources)
 	}
-}
-
-func ProcessWS(config *config) func(w http.ResponseWriter, r *http.Request) {
-	//cfg := config
-	var upgrader = websocket.Upgrader{
-		HandshakeTimeout: time.Second * 2,
-		CheckOrigin: func(r *http.Request) bool {
-			return true //this trusts all origins (bad) should only trust the databox proxy
-		},
-		EnableCompression: false,
-	}
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		c, err := upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			libDatabox.Err("upgrade:" + err.Error())
-			return
-		}
-		defer c.Close()
-		for {
-			mt, message, err := c.ReadMessage()
-			if err != nil {
-				libDatabox.Err("read:" + err.Error())
-				break
-			}
-			libDatabox.Info("recv: " + string(message))
-			err = c.WriteMessage(mt, message)
-			if err != nil {
-				libDatabox.Err("read:" + err.Error())
-				break
-			}
-		}
-	}
-
 }

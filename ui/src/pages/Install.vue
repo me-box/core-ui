@@ -63,6 +63,7 @@ export default {
   },
   asyncComputed: {
     manifest: {
+        lazy: true,
         get() {
 
             if (this.manifestName == "?") {
@@ -88,6 +89,7 @@ export default {
         default: null,
     },
     dataSources: {
+        lazy: true,
         get() {
             return fetch('/core-ui/ui/api/dataSources', {credentials: "same-origin"})
             .then((response) => {
