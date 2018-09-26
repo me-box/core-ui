@@ -1,5 +1,5 @@
 IMAGE_NAME=core-ui
-DEFAULT_REG=toshbrown
+DEFAULT_REG=ktg
 VERSION=latest
 
 .PHONY: all

@@ -1,38 +1,77 @@
 <template>
-  <div>
-  <section style="padding:16px">
-      <h1>Welcome to Databox</h1>
-      <div>Databox lets you take control of your personal data and IoT devices.</div>
-      <div>Get started by:</div>
-
-    <p>Install a what you need from the&nbsp;<router-link :to="{ path:'appstore'}">App store</router-link>.<p>
-
-       <div style="display: flex;justify-content: center;align-items: center;"><a href="https://play.google.com/store/apps/details?id=io.databox.app" target="_top" style="margin-top: 5px; margin-right: 20px"><img alt="Get Databox on Google Play" height="60" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"></a><a href="https://itunes.apple.com/us/app/databox-controller/id1295071825?mt=8" target="_top" style="display:inline-block;overflow:hidden;background:url(//linkmaker.itunes.apple.com/assets/shared/badges/en-us/appstore-lrg.svg) no-repeat;width:135px;height:40px;background-size:contain;" title="Get Databox on Apple App Store"></a></div><div style="display: flex;justify-content: center;align-items: center;"><a class="mdc-button mdc-button--compact" href="/core-ui/ui/api/qrcode.png">APP QR Config Code</a></div>
-       <div>For more help see the&nbsp;<a href="https://github.com/me-box/databox">documentation</a>.</div>
-    </section>
-    </div>
+	<div>
+		<div v-if="status" style="display: flex; flex-wrap: wrap;">
+			<icon v-bind:name="item.name"
+			      v-bind:displayName="true"
+			      v-bind:updating="(item.state !== 'running')"
+			      v-bind:route="'/view/' + item.name"
+			      :key="item"
+			      v-for="item in status"
+			      v-if="(item.type === 'app' || item.type === 'driver') && item.name !== 'core-ui'"
+			      style="margin: 8px"/>
+			<icon name="App Store"
+			      v-bind:displayName="true"
+			      v-bind:updating="false"
+			      route="/store"
+			      style="margin: 8px"/>
+			<icon name="Settings"
+			      v-bind:displayName="true"
+			      v-bind:updating="false"
+			      route="/settings"
+			      icon="settings"
+			      style="margin: 8px"/>
+		</div>
+	</div>
 </template>
 <script>
+	import testdata from '../testData/status.json'
+	import Icon from '../components/AppIcon.vue'
 
-export default {
-  name: 'home',
-  props: {},
-  mounted: function () {
-    let devmode = localStorage.getItem('dev')
-    if (this.$parent.authenticated == "false" && devmode != "true") {
-      this.$router.push('login')
-    }
-  }
-}
+	export default {
+		name: 'Home',
+		props: {},
+		components: {
+			Icon,
+		},
+		data() {
+			//get data from api later
+			return {status: {}, timerID: 0}
+		},
+		mounted() {
+			this.$parent.setTitle("Databox Dashboard", true);
+			let devmode = localStorage.getItem('dev');
+			if (this.$parent.authenticated === "false" && devmode !== "true") {
+				this.$router.push('login')
+			}
 
+			this.loadData();
+			this.timerID = setInterval(() => {
+				this.loadData();
+			}, 1000);
+		},
+		destroyed: function () {
+			clearInterval(this.timerID)
+		},
+		methods: {
+			loadData: function () {
+				this.ApiGetRequest('/core-ui/ui/api/containerStatus', testdata)
+					.then(json => {
+						this.status = json;
+					})
+			},
+			GoToUI: function (appName) {
+				this.$router.push("view?ui=" + appName)
+			},
+			Restart: function (appName) {
+				alert("Install " + appName)
+			},
+			Uninstall: function (appName) {
+				alert("Uninstall" + appName)
+			}
+		}
+	}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-div {
-  padding: 5px;
-}
-section {
-  display: block;
-}
 </style>
