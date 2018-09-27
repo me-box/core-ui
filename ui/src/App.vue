@@ -21,10 +21,10 @@
 
 						<div id="notification-menu" class="mdc-menu-surface mdc-list mdc-list--two-line">
 							<div class="mdc-list-item" v-for="item in notifications">
-								<span class="mdc-list-item__text">
-                                    <span class="mdc-list-item__primary-text">{{item}}</span>
-									<span class="mdc-list-item__secondary-text">Yesterday, 1:30pm</span>
-                                </span>
+								<div class="mdc-list-item__text">
+									<div class="mdc-list-item__primary-text">{{item}}</div>
+									<div class="mdc-list-item__secondary-text">Yesterday, 1:30pm</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -124,12 +124,19 @@
 		display: flex;
 		justify-content: center;
 		padding: 24px;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	@media (max-width: 479px) {
 		#content {
 			padding: 16px;
+			align-items: stretch;
 		}
+	}
+
+	#toolbarTitle {
+		font-family: 'Avenir', Helvetica, Arial, sans-serif;
 	}
 
 	#app {

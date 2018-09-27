@@ -26,11 +26,11 @@
 		</div>
 		<div class="mdc-list mdc-list--two-line" data-mdc-auto-init="MDCList">
 			<div class="mdc-list-item" v-for="source in dataSources" v-on:click="goto(source.dsType)">
-				<span class="mdc-list-item__graphic material-icons" aria-hidden="true">folder</span>
-				<span class="mdc-list-item__text">
-                    <span class="mdc-list-item__primary-text">{{source.description}}</span>
-                    <span class="mdc-list-item__secondary-text">{{source.dsType}}</span>
-                </span>
+				<div class="mdc-list-item__graphic material-icons" aria-hidden="true">folder</div>
+				<div class="mdc-list-item__text">
+                    <div class="mdc-list-item__primary-text">{{source.description}}</div>
+                    <div class="mdc-list-item__secondary-text">{{source.dsType}}</div>
+                </div>
 			</div>
 		</div>
 		<aside id="delete-dialog"

@@ -1,17 +1,18 @@
 <template>
 	<div>
-		<div v-if="status" style="display: flex; flex-wrap: wrap;">
+		<div v-if="apps" style="display: flex; flex-wrap: wrap;">
 			<icon v-bind:name="item.name"
 			      v-bind:displayName="true"
 			      v-bind:updating="(item.state !== 'running')"
 			      v-bind:route="'/view/' + item.name"
 			      :key="item"
-			      v-for="item in status"
+			      v-for="item in apps"
 			      v-if="(item.type === 'app' || item.type === 'driver') && item.name !== 'core-ui'"
 			      style="margin: 8px"/>
 			<icon name="App Store"
 			      v-bind:displayName="true"
 			      v-bind:updating="false"
+			      icon="apps"
 			      route="/store"
 			      style="margin: 8px"/>
 			<icon name="Settings"
@@ -35,7 +36,7 @@
 		},
 		data() {
 			//get data from api later
-			return {status: {}, timerID: 0}
+			return {apps: [], timerID: 0}
 		},
 		mounted() {
 			this.$parent.setTitle("Databox Dashboard", true);
@@ -56,7 +57,7 @@
 			loadData: function () {
 				this.ApiGetRequest('/core-ui/ui/api/containerStatus', testdata)
 					.then(json => {
-						this.status = json;
+						this.apps = json;
 					})
 			},
 			GoToUI: function (appName) {

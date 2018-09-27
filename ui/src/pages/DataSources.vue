@@ -1,12 +1,28 @@
 <template>
-	<div class="mdc-list" data-mdc-auto-init="MDCList">
-		<div class="mdc-list-item" v-on:click="goto('/datasource/All Data')">
-			<span class="mdc-list-item__graphic material-icons" aria-hidden="true">folder</span>
-			All Data
+	<div>
+		<div style="display: flex; justify-content: space-between;">
+			<div class="mdc-button icon-button">
+				<div class="material-icons">share</div>
+				Share
+			</div>
+			<div class="mdc-button icon-button">
+				<div class="material-icons">cloud_download</div>
+				Export
+			</div>
+			<div class="mdc-button icon-button">
+				<div class="material-icons">backup</div>
+				Backup
+			</div>
+			<div class="mdc-button icon-button" style="color: firebrick">
+				<div class="material-icons">delete</div>
+				Delete
+			</div>
 		</div>
-		<div class="mdc-list-item" v-for="source in dataSources" v-on:click="goto('/data/' + source)">
-			<span class="mdc-list-item__graphic material-icons" aria-hidden="true">folder</span>
-			{{source}}
+		<div class="mdc-list">
+			<div class="mdc-list-item" v-for="source in dataSources" v-on:click="goto('/data/' + source)">
+				<span class="mdc-list-item__graphic material-icons" aria-hidden="true">folder</span>
+				{{source}}
+			</div>
 		</div>
 	</div>
 </template>
@@ -16,17 +32,15 @@
 	export default {
 		name: 'databoxStatus',
 		props: {},
-		created() {
-			this.$parent.setTitle("Databox Data");
-		},
 		data() {
 			//get data from api later
 			return {
-				dataSources: {},
+				dataSources: [],
 				timerID: 0,
 			}
 		},
 		mounted() {
+			this.$parent.setTitle("Databox Data");
 			this.loadData();
 			this.timerID = setInterval(() => {
 				this.loadData();
@@ -52,6 +66,7 @@
 								sourceNames.push(name);
 							}
 						});
+						console.log(sourceNames);
 						this.dataSources = sourceNames;
 					})
 			},
@@ -85,5 +100,15 @@
 	li {
 		display: block;
 		padding: .5em;
+	}
+
+	.icon-button {
+		flex-direction: column;
+		height: auto;
+		padding: 8px;
+	}
+
+	.icon-button > .material-icons {
+		padding-bottom: 8px;
 	}
 </style>
