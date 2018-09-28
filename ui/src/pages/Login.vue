@@ -33,11 +33,7 @@ export default {
                     },
                 })
                 .then((response) => {
-                    return response.text()
-                })
-                .then( (body) => {
-                    console.log(body)
-                    if (body == "connected") {
+                    if (response.status == 200) {
                         localStorage.setItem('databoxAuthenticated', "true")
                         this.$parent.authenticated = "true"
                         this.$router.push("/")
