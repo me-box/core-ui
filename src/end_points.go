@@ -18,7 +18,8 @@ func qrcode(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		qrcode, err := cfg.cmStoreClient.KVBin.Read(cfg.cmDataDataSource.DataSourceID, "qrcode.png")
+		cmStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.cmStoreEndpoint)
+		qrcode, err := cmStoreClient.KVBin.Read(cfg.cmDataDataSource.DataSourceID, "qrcode.png")
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(http.StatusBadRequest)
@@ -35,7 +36,8 @@ func certPub(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		crtpub, err := cfg.cmStoreClient.KVBin.Read(cfg.cmDataDataSource.DataSourceID, "cert.pem")
+		cmStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.cmStoreEndpoint)
+		crtpub, err := cmStoreClient.KVBin.Read(cfg.cmDataDataSource.DataSourceID, "cert.pem")
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(http.StatusBadRequest)
@@ -52,7 +54,8 @@ func certPubDer(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		crtpubder, err := cfg.cmStoreClient.KVBin.Read(cfg.cmDataDataSource.DataSourceID, "cert.der")
+		cmStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.cmStoreEndpoint)
+		crtpubder, err := cmStoreClient.KVBin.Read(cfg.cmDataDataSource.DataSourceID, "cert.der")
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(http.StatusBadRequest)
@@ -78,7 +81,9 @@ func restart(config *config) func(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Println("[restart] data received", string(body))
 
-		err = cfg.cmStoreClient.KVJSON.Write(cfg.cmAPIDataSource.DataSourceID, "restart", body)
+		cmStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.cmStoreEndpoint)
+
+		err = cmStoreClient.KVJSON.Write(cfg.cmAPIDataSource.DataSourceID, "restart", body)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(http.StatusBadRequest)
@@ -96,6 +101,7 @@ func uninstall(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -105,7 +111,9 @@ func uninstall(config *config) func(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Println("[uninstall] data received", string(body))
 
-		err = cfg.cmStoreClient.KVJSON.Write(cfg.cmAPIDataSource.DataSourceID, "uninstall", body)
+		cmStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.cmStoreEndpoint)
+
+		err = cmStoreClient.KVJSON.Write(cfg.cmAPIDataSource.DataSourceID, "uninstall", body)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(http.StatusBadRequest)
@@ -133,7 +141,9 @@ func install(config *config) func(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Println("[install] data received", string(body))
 
-		err = cfg.cmStoreClient.KVJSON.Write(cfg.cmAPIDataSource.DataSourceID, "install", body)
+		cmStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.cmStoreEndpoint)
+
+		err = cmStoreClient.KVJSON.Write(cfg.cmAPIDataSource.DataSourceID, "install", body)
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(http.StatusBadRequest)
@@ -151,13 +161,16 @@ func getApps(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		driverManifests, err := cfg.manifestStoreClient.KVJSON.ListKeys(cfg.driverDatasource.DataSourceID)
+
+		manifestStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.manifestStoreEndpoint)
+
+		driverManifests, err := manifestStoreClient.KVJSON.ListKeys(cfg.driverDatasource.DataSourceID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
 			return
 		}
-		appManifests, err := cfg.manifestStoreClient.KVJSON.ListKeys(cfg.appsDatasource.DataSourceID)
+		appManifests, err := manifestStoreClient.KVJSON.ListKeys(cfg.appsDatasource.DataSourceID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
@@ -176,9 +189,12 @@ func getManifest(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		manifestStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.manifestStoreEndpoint)
+
 		vars := mux.Vars(r)
 		libDatabox.Info("Getting app manifest " + vars["name"])
-		manifest, err := cfg.manifestStoreClient.KVJSON.Read(cfg.allManifests.DataSourceID, vars["name"])
+		manifest, err := manifestStoreClient.KVJSON.Read(cfg.allManifests.DataSourceID, vars["name"])
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
@@ -196,7 +212,10 @@ func containerStatus(config *config) func(w http.ResponseWriter, r *http.Request
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		containerStatus, err := cfg.cmStoreClient.KVJSON.Read(cfg.cmDataDataSource.DataSourceID, "containerStatus")
+
+		cmStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.cmStoreEndpoint)
+
+		containerStatus, err := cmStoreClient.KVJSON.Read(cfg.cmDataDataSource.DataSourceID, "containerStatus")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
@@ -209,13 +228,40 @@ func containerStatus(config *config) func(w http.ResponseWriter, r *http.Request
 	}
 }
 
+func containerStatus2(config *config) func(w http.ResponseWriter, r *http.Request) {
+	cfg := config
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		libDatabox.Info("Calling " + cfg.cmAPIServiceStatus.DataSourceID)
+		cmStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.cmStoreEndpoint)
+		containerStatusChan, err := cmStoreClient.FUNC.Call("ServiceStatus", []byte{}, libDatabox.ContentTypeJSON)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "Can't call ServiceStatus %s", err.Error())
+			return
+		}
+		containerStatus := <-containerStatusChan
+
+		if containerStatus.Status != libDatabox.FuncStatusOK {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "Error calling  ServiceStatus %d: %s", containerStatus.Status, string(containerStatus.Response))
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `%s`, containerStatus.Response)
+	}
+}
+
 func dataSources(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		cmStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.cmStoreEndpoint)
 		libDatabox.Info("Getting dataSources ")
-		datasources, err := cfg.cmStoreClient.KVJSON.Read(cfg.cmDataDataSource.DataSourceID, "dataSources")
+		datasources, err := cmStoreClient.KVJSON.Read(cfg.cmDataDataSource.DataSourceID, "dataSources")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
