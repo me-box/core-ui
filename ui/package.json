@@ -5,10 +5,12 @@
 	"scripts": {
 		"serve": "vue-cli-service serve",
 		"build": "vue-cli-service build",
+		"build.test": "vue-cli-service build 'src/app.js'",
+		"build.app": "vue-cli-service build --dest '../../databox-app/www' 'src/app.js'",
 		"lint": "vue-cli-service lint"
 	},
 	"dependencies": {
-		"material-components-web": "^0.40.0",
+		"material-components-web": "^0.40.1",
 		"node-sass": "^4.9.3",
 		"npm": "^6.4.1",
 		"sass-loader": "^7.1.0",
@@ -17,9 +19,9 @@
 		"vue-router": "^3.0.1"
 	},
 	"devDependencies": {
-		"@vue/cli-plugin-babel": "^3.0.3",
-		"@vue/cli-plugin-eslint": "^3.0.3",
-		"@vue/cli-service": "^3.0.3",
+		"@vue/cli-plugin-babel": "^3.0.5",
+		"@vue/cli-plugin-eslint": "^3.0.5",
+		"@vue/cli-service": "^3.0.5",
 		"vue-template-compiler": "^2.5.17"
 	},
 	"eslintConfig": {
@@ -31,7 +33,12 @@
 			"plugin:vue/essential",
 			"eslint:recommended"
 		],
-		"rules": {},
+		"rules": {
+			"no-mixed-spaces-and-tabs": [
+				"error",
+				"smart-tabs"
+			]
+		},
 		"parserOptions": {
 			"parser": "babel-eslint"
 		}

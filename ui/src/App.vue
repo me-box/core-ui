@@ -54,8 +54,7 @@
 			}
 		},
 		created: function () {
-			let authenticated = localStorage.getItem('databoxAuthenticated');
-			if (authenticated === "true") {
+			if (localStorage.getItem('databoxAuthenticated') === "true") {
 				this.authenticated = true;
 			}
 			else {
@@ -63,9 +62,46 @@
 			}
 		},
 		mounted: function () {
-			this.notificationMenu = new MDCMenuSurface(document.querySelector('#notification-menu'));
+			if(this.authenticated) {
+				this.notificationMenu = new MDCMenuSurface(document.querySelector('#notification-menu'));
+			}
 		},
 		methods: {
+			login: function (url, password) {
+				//let _this = this;
+				localStorage.setItem('databoxURL', url);
+				fetch('https://' + url + '/api/connect', {
+					method: "GET",
+					credentials: "include",
+					mode: "cors",
+					headers: {
+						'Authorization': "Token " + password,
+					},
+				})
+					.then((response) => {
+						return response.text()
+					})
+					.then((body) => {
+						if (body === "connected") {
+							localStorage.setItem('databoxAuthenticated', "true");
+							this.authenticated = true;
+							this.$router.push("/")
+						} else {
+							return Promise.reject("Auth failed")
+						}
+					})
+					.catch((error) => {
+						this.error = error.toString();
+						if (this.isDev) {
+							localStorage.setItem('databoxAuthenticated', "true");
+							this.authenticated = true;
+							this.$router.push("/")
+						} else {
+							localStorage.setItem('databoxAuthenticated', "false");
+							this.authenticated = false;
+						}
+					});
+			},
 			goto: function (page) {
 				this.$router.push(page);
 			},

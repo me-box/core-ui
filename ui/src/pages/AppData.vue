@@ -17,7 +17,7 @@
 			</div>
 			<div class="mdc-button icon-button">
 				<div class="material-icons">check_box</div>
-				Disable
+				Enabled
 			</div>
 			<div class="mdc-button icon-button" style="color: firebrick" @click="deletePrompt">
 				<div class="material-icons">delete</div>

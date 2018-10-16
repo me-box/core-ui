@@ -34,7 +34,8 @@
 			</div>
 			<div class="mdc-dialog__scrim"></div>
 		</aside>
-		<div class="mdc-button" @click="openPasswordDialog">Change Password</div>
+		<button class="mdc-button" @click="openPasswordDialog">Change Password</button>
+		<button class="mdc-button" @click="logout">Log Out</button>
 	</div>
 </template>
 <script>
@@ -64,6 +65,10 @@
 		methods: {
 			closePasswordDialog: function() {
 				this.passwordDialog.close();
+			},
+			logout: function() {
+				localStorage.setItem('databoxAuthenticated', "false");
+				this.$router.push('/login');
 			},
 			openPasswordDialog: function() {
 				//this.renameDialog.lastFocusedTarget = evt.target;

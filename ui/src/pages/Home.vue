@@ -7,7 +7,7 @@
 			      v-bind:route="'/view/' + item.name"
 			      :key="item"
 			      v-for="item in apps"
-			      v-if="(item.type === 'app' || item.type === 'driver') && item.name !== 'core-ui'"
+			      v-if="(item.type === 'app' || item.type === 'driver') && item.name !== 'core-ui' && item.name !== 'core-app-store'"
 			      style="margin: 8px"/>
 			<icon name="App Store"
 			      v-bind:displayName="true"
@@ -40,11 +40,6 @@
 		},
 		mounted() {
 			this.$parent.setTitle("Databox Dashboard", true);
-			let devmode = localStorage.getItem('dev');
-			if (this.$parent.authenticated === "false" && devmode !== "true") {
-				this.$router.push('login')
-			}
-
 			this.loadData();
 			this.timerID = setInterval(() => {
 				this.loadData();
@@ -57,7 +52,9 @@
 			loadData: function () {
 				this.ApiGetRequest('/core-ui/ui/api/containerStatus', testdata)
 					.then(json => {
-						this.apps = json;
+						if(this.apps != json) {
+							this.apps = json;
+						}
 					})
 			},
 			GoToUI: function (appName) {
