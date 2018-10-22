@@ -20,17 +20,6 @@
 		"url": "git+https://github.com/me-box/app-os-monitor"
 	},
 
-	"packages": [
-		{
-			"name": "OS monitor Plotter",
-			"purpose": "To visualize your databox load and free memory",
-			"install": "required",
-			"risks": "None.",
-			"benefits": "You can see the data!",
-			"datastores": [ "loadavg1","loadavg5","loadavg15","freemem","loadavg1Structured","freememStructured" ]
-		}
-	],
-	"allowed-combinations":[ ],
 	"datasources": [
 		{
 			"type": "loadavg1",
