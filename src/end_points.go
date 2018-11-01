@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
-	libDatabox "github.com/me-box/lib-go-databox"
+	"github.com/me-box/lib-go-databox"
 )
 
 func statusEndpoint(w http.ResponseWriter, req *http.Request) {
@@ -182,6 +183,82 @@ func getApps(config *config) func(w http.ResponseWriter, r *http.Request) {
 		appsJSON, _ := json.Marshal(appManifests)
 		driversJSON, _ := json.Marshal(driverManifests)
 		fmt.Fprintf(w, `{"apps": %s,"drivers":%s}`, appsJSON, driversJSON)
+	}
+}
+
+type DriverProvides struct {
+	Type        string `json:"data-source-type"`
+	Description string `json:"description"`
+	StoreType   string `json:"store-type"`
+}
+
+type DriverManifest struct {
+	Name     string           `json:"name"`
+	Provides []DriverProvides `json:"provides"`
+}
+
+func getDrivers(config *config) func(w http.ResponseWriter, r *http.Request) {
+	cfg := config
+
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		manifestStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.manifestStoreEndpoint)
+
+		driverNames, err := manifestStoreClient.KVJSON.ListKeys(cfg.driverDatasource.DataSourceID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
+			return
+		}
+
+		decoder := json.NewDecoder(r.Body)
+		var requirements []string
+		err = decoder.Decode(&requirements)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
+			return
+		}
+
+		results := []string{}
+		for _, driverName := range driverNames {
+			manifest, err := manifestStoreClient.KVJSON.Read(cfg.allManifests.DataSourceID, driverName)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
+				return
+			}
+
+			var driverManifest DriverManifest
+			err = json.Unmarshal(manifest, &driverManifest)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
+				return
+			}
+
+			var requirementList []string
+			for _, provision := range driverManifest.Provides {
+				for _, requirement := range requirements {
+					if provision.Type == requirement {
+						requirementList = append(requirementList, requirement)
+						break
+					}
+				}
+			}
+
+			if driverName == "driver-os-monitor" {
+				results = append(results, string(manifest))
+			} else if requirementList != nil {
+				results = append(results, string(manifest))
+			}
+		}
+
+		response := "[" + strings.Join(results, ",") + "]"
+
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `%s`, response)
 	}
 }
 

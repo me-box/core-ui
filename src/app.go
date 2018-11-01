@@ -55,6 +55,7 @@ func main() {
 	router.HandleFunc("/ui/api/containerStatus", containerStatus(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/containerStatus2", containerStatus2(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/dataSources", dataSources(&cfg)).Methods("GET")
+	router.HandleFunc("/ui/api/drivers", getDrivers(&cfg)).Methods("POST")
 	router.HandleFunc("/ui/api/manifest/{name}", getManifest(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/install", install(&cfg)).Methods("POST")
 	router.HandleFunc("/ui/api/uninstall", uninstall(&cfg)).Methods("POST")
@@ -62,8 +63,8 @@ func main() {
 	router.HandleFunc("/ui/api/qrcode.png", qrcode(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/cert.pem", certPub(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/cert.der", certPubDer(&cfg)).Methods("GET")
-	router.HandleFunc("/ui/{appstore|datasources|settings|databoxstatus|install|restart|uninstall|view|login}", serveIndex).Methods("GET")
-	router.PathPrefix("/ui").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir("./www"))))
+	router.PathPrefix("/ui/{css|icons|js}").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir("./www")))).Methods("GET")
+	router.PathPrefix("/").Handler(http.HandlerFunc(serveIndex)).Methods("GET")
 
 	tlsConfig := &tls.Config{
 		PreferServerCipherSuites: true,
@@ -86,5 +87,6 @@ func main() {
 }
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
+	libDatabox.Info(r.RequestURI)
 	http.ServeFile(w, r, "./www/index.html")
 }

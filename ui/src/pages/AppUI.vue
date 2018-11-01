@@ -1,15 +1,35 @@
 <template>
-	<iframe :src="'/' + this.app + '/ui'"></iframe>
+	<iframe :src="url"></iframe>
 </template>
 <script>
 	export default {
 		name: 'appUI',
-		props: ['app'],
-		data: function () {
+		props: ['app', 'path'],
+		data() {
 			return {ui: ""}
 		},
-		mounted()
-		{
+		computed: {
+			url() {
+				let url = '/' + this.app + '/ui/';
+				if (this.path) {
+					url = url + this.path;
+				}
+
+				let search = window.location.search;
+				if (search === '') {
+					if (this.isMobile) {
+						url = url + '?mobile=true';
+					}
+				} else {
+					url = url + window.location.search;
+					if (this.isMobile) {
+						url = url + '&mobile=true';
+					}
+				}
+				return url;
+			}
+		},
+		mounted() {
 			//get app name from Query string
 			this.$parent.setTitle(this.app);
 		},

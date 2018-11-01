@@ -45,30 +45,66 @@
 
 	export default {
 		name: 'app',
-		data: function () {
+		data() {
 			return {
-				authToken: null,
+				databoxUrl: "localhost",
 				authenticated: false,
-				notifications: ["A Notification", "Another Notification"],
+				notifications: [],
 				notificationMenu: null,
 			}
 		},
-		created: function () {
-			if (localStorage.getItem('databoxAuthenticated') === "true") {
-				this.authenticated = true;
+		created() {
+			if (localStorage.getItem("databoxUrl") !== null) {
+				this.databoxUrl = localStorage.getItem("databoxUrl");
+			} else if (!this.isMobile) {
+				this.url = window.location.hostname;
 			}
-			else {
-				this.$router.push('/login');
-			}
+			this.authenticated = localStorage.getItem("databoxAuthenticated") === "true";
+			this.apiRequest('/core-ui/ui/api/containerStatus', {})
+				.then(blah => {
+					console.log(blah);
+					this.authenticated = true;
+				})
 		},
-		mounted: function () {
-			if(this.authenticated) {
+		mounted() {
+			if (this.authenticated) {
 				this.notificationMenu = new MDCMenuSurface(document.querySelector('#notification-menu'));
 			}
 		},
 		methods: {
-			login: function (url, password) {
-				//let _this = this;
+			apiRequest: function (url, cannedData, opts = {}) {
+				opts.credentials = 'same-origin';
+				return fetch('https://' + this.databoxUrl + url, opts)
+					.then((response) => {
+						if (response.status === 401 || response.status === 404) {
+							this.authenticated = false;
+							console.log(response.status);
+							this.$router.replace("/login");
+						} else if (!response.ok) {
+							throw Error(response.status + ": " + response.statusText);
+						} else {
+							return response;
+						}
+					})
+					.then((response) => {
+						return response.json()
+					})
+					.catch((err) => {
+						console.log(err);
+						if (this.isDev) {
+							return cannedData
+						} else {
+							throw err;
+						}
+					});
+			},
+			logout() {
+				this.authenticated = false;
+				localStorage.setItem('databoxAuthenticated', 'false');
+				this.$router.replace("/");
+			},
+			login(url, password) {
+				this.databoxUrl = url;
 				localStorage.setItem('databoxURL', url);
 				fetch('https://' + url + '/api/connect', {
 					method: "GET",
@@ -83,36 +119,33 @@
 					})
 					.then((body) => {
 						if (body === "connected") {
-							localStorage.setItem('databoxAuthenticated', "true");
 							this.authenticated = true;
-							this.$router.push("/")
+							localStorage.setItem('databoxAuthenticated', 'true');
+							this.$router.replace("/")
 						} else {
 							return Promise.reject("Auth failed")
 						}
 					})
 					.catch((error) => {
-						this.error = error.toString();
 						if (this.isDev) {
-							localStorage.setItem('databoxAuthenticated', "true");
 							this.authenticated = true;
-							this.$router.push("/")
+							this.$router.replace("/")
 						} else {
-							localStorage.setItem('databoxAuthenticated', "false");
 							this.authenticated = false;
 						}
 					});
 			},
-			goto: function (page) {
+			goto(page) {
 				this.$router.push(page);
 			},
-			back: function () {
+			back() {
 				this.$router.go(-1);
 			},
-			openNotifications: function () {
+			openNotifications() {
 				console.log(this.notificationMenu);
 				this.notificationMenu.open = true;
 			},
-			setTitle: function (title, backHidden) {
+			setTitle(title, backHidden) {
 				let titleBar = document.getElementById('toolbarTitle');
 				if (titleBar != null) {
 					titleBar.innerText = title;
@@ -156,19 +189,27 @@
 		margin: 0;
 	}
 
+	#app {
+		height: 100%;
+	}
+
 	#content {
+		height: 100%;
 		display: flex;
-		justify-content: center;
-		padding: 24px;
+		justify-content: flex-start;
 		flex-direction: column;
 		align-items: center;
 	}
 
 	@media (max-width: 479px) {
 		#content {
-			padding: 16px;
 			align-items: stretch;
 		}
+	}
+
+	.mdc-top-app-bar--fixed-adjust {
+		box-sizing: border-box;
+		height: 100%;
 	}
 
 	#toolbarTitle {

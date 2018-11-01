@@ -14,7 +14,7 @@ import Settings from './pages/Settings.vue'
 import SettingsSystem from './pages/SettingsSystem.vue'
 
 const router = new VueRouter({
-	//mode: 'history',
+	mode: 'history',
 	base: '/core-ui/ui/',
 	routes: [
 		{path: '/', component: Home},
@@ -32,7 +32,14 @@ const router = new VueRouter({
 				default: AppUI,
 				toolbar: AppUIToolbar
 			},
-			props: {default: true, toolbar: false}
+			props: {default: true, toolbar: true}
+		},
+		{
+			path: '/view/:app/:path', components: {
+				default: AppUI,
+				toolbar: AppUIToolbar
+			},
+			props: {default: true, toolbar: true}
 		}
 	]
 });

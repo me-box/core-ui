@@ -3,10 +3,10 @@
 		<div class="mdc-menu-surface--anchor">
 			<div class="material-icons mdc-top-app-bar__action-item" @click="openMenu">more_vert</div>
 			<div id="app-menu" class="mdc-menu-surface mdc-list">
-				<div class="mdc-list-item" v-on:click="viewLogs">
+				<!--<div class="mdc-list-item" v-on:click="viewLogs">
 					<span class="mdc-list-item__graphic material-icons" aria-hidden="true">info</span>
 					View Logs
-				</div>
+				</div>-->
 				<div class="mdc-list-item" v-on:click="restart">
 					<span class="mdc-list-item__graphic material-icons" aria-hidden="true">refresh</span>
 					Restart
@@ -42,9 +42,8 @@
 				alert("Comming soon!!")
 			},
 			restart: function () {
-				fetch(`/core-ui/ui/api/restart`, {
+				this.$parent.apiRequest('/core-ui/ui/api/restart', {}, {
 					method: "POST",
-					credentials: "same-origin",
 					headers: {
 						'Accept': 'application/json, text/plain, */*',
 						'Content-Type': 'application/json'
@@ -53,25 +52,13 @@
 						name: this.app,
 					}),
 				})
-					.then((response) => {
-						if (response.status === 401) {
-							localStorage.setItem('databoxAuthenticated', false);
-							this.$router.push('/');
-							return
-						}
-						if (response.status !== 200) {
-							alert("Error restarting app. Sorry.")
-						}
-						else {
-							this.$router.push("MyApps")
-						}
+					.then(() => {
+						this.$router.push("/")
 					})
-					.catch(error => console.error(error));
 			},
 			remove: function () {
-				fetch(`/core-ui/ui/api/uninstall`, {
+				this.$parent.apiRequest('/core-ui/ui/api/uninstall', {}, {
 					method: "POST",
-					credentials: "same-origin",
 					headers: {
 						'Accept': 'application/json, text/plain, */*',
 						'Content-Type': 'application/json'
@@ -80,20 +67,9 @@
 						name: this.ui,
 					}),
 				})
-					.then((response) => {
-						if (response.status === 401) {
-							localStorage.setItem('databoxAuthenticated', false);
-							this.$router.push('/');
-							return
-						}
-						if (response.status !== 200) {
-							alert("Error restarting app. Sorry.")
-						}
-						else {
-							this.$router.push("MyApps")
-						}
+					.then(() => {
+						this.$router.push("/")
 					})
-					.catch(error => console.error(error));
 			}
 		}
 	}

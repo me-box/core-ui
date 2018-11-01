@@ -98,7 +98,7 @@
 			},
 
 			loadData: function () {
-				this.ApiGetRequest('/core-ui/ui/api/dataSources', testdata)
+				this.$parent.apiRequest('/core-ui/ui/api/dataSources', testdata)
 					.then(json => {
 						//this.dataSources = json;
 						let getValFromHypercat = (hypercat, match) => {

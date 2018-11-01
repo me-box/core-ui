@@ -1,7 +1,9 @@
 <template>
 	<div class="mdc-card">
-		<section class="material-icons mdc-theme--primary-bg">lock</section>
-		<form>
+		<section class="material-icons mdc-theme--primary-bg"
+		         style="border-top-left-radius: 4px; border-top-right-radius: 4px">lock
+		</section>
+		<form @submit.prevent="login">
 			<div class="mdc-text-field" id="url-field">
 				<input id="url-field-input"
 				       v-model="url"
@@ -26,7 +28,7 @@
 			</div>
 			<div style="display: flex">
 				<button type="button" v-if="isMobile" class="mdc-button" @click="scan">Scan QR</button>
-				<button type="submit" class="mdc-button" @click="login" :disabled="!valid">Login</button>
+				<button type="submit" class="mdc-button" :disabled="!valid">Login</button>
 			</div>
 		</form>
 
@@ -55,16 +57,12 @@
 			new MDCTextField(document.querySelector('#url-field'));
 			new MDCTextField(document.querySelector('#password-field'));
 		},
-		created: function() {
-			if(!this.isMobile) {
-				this.url = window.location.hostname;
-			} else {
-				this.url = localStorage.getItem('databoxURL');
-			}
+		created: function () {
+			this.url = this.$parent.databoxUrl;
 		},
 		methods: {
 			scan: function () {
-				if(this.isMobile) {
+				if (this.isMobile) {
 					this.$router.push('/scan');
 				}
 			},

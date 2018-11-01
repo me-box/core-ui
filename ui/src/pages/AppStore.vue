@@ -1,21 +1,13 @@
 <template>
-	<div class="appStore">
-		<div id="wrapper">
-			<h3>Available Apps</h3>
-			<div v-if="apps" style="display: flex; flex-wrap: wrap;">
-				<icon v-for="item in apps"
-				      :key="item"
-				      :name="item"
-				      :displayName="true"
-				      :route="'/install/' + item"
-				      style="margin: 8px"/>
-				<icon v-for="item in drivers"
-				      :key="item"
-				      :name="item"
-				      :displayName="true"
-				      :route="'/install/' + item"
-				      style="margin: 8px"/>
-			</div>
+	<div id="appStore">
+		<h3>Available Apps</h3>
+		<div v-if="apps" id="appList">
+			<icon v-for="item in apps"
+			      :key="item"
+			      :name="item"
+			      :displayName="true"
+			      :route="'/install/' + item"
+			      style="margin: 8px"/>
 		</div>
 	</div>
 </template>
@@ -36,7 +28,6 @@
 			return {apps: [], drivers: [], timerID: 0}
 		},
 		mounted() {
-
 			this.loadData();
 			this.timerID = setInterval(() => {
 				this.loadData();
@@ -49,10 +40,14 @@
 		},
 		methods: {
 			loadData: function () {
-				this.ApiGetRequest("/core-ui/ui/api/appStore", testdata)
+				this.$parent.apiRequest("/core-ui/ui/api/appStore", testdata)
 					.then((data) => {
-						this.apps = data.apps;
-						this.drivers = data.drivers;
+						let appList = data.apps;
+						Array.prototype.push.apply(appList,data.drivers);
+						appList.sort((a, b) => {
+							a.localeCompare(b);
+						});
+						this.apps = appList;
 					})
 			}
 		}
@@ -62,4 +57,19 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+	#appList {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	#appStore {
+		display: flex;
+		margin: 24px;
+	}
+
+	@media (max-width: 479px) {
+		#appStore {
+			margin: 16px;
+		}
+	}
 </style>

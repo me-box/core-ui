@@ -6,7 +6,7 @@ Vue.mixin({
 	data: function() {
 		return {
 			isMobile: false,
-			isDev: true
+			isDev: false
 		}
 	},
 });

@@ -9,32 +9,11 @@ Vue.use(VueRouter);
 Vue.use(AsyncComputed);
 
 Vue.mixin({
-	methods: {
-		ApiGetRequest: function (url, cannedData) {
-			let _this = this;
-			return fetch(url, {
-				credentials: "same-origin"
-			})
-				.then((response) => {
-					if (!response.ok) {
-						throw Error(response.statusText);
-					}
-					return response;
-				})
-				.then((response) => {
-					return response.json()
-				})
-				.catch(() => {
-					if (_this.isDev) {
-						return cannedData
-					}
-					else {
-						// TODO If Authentication error
-						localStorage.setItem('databoxAuthenticated', "false");
-						_this.$parent.authenticated = false;
-						_this.$router.push("/login")
-					}
-				});
+	created() {
+		let authenticated = localStorage.getItem("databoxAuthenticated") === "true";
+		if (!authenticated) {
+			console.log("login2");
+			this.$router.replace("/login");
 		}
 	}
 });

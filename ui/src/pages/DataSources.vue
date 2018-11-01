@@ -51,7 +51,7 @@
 		},
 		methods: {
 			loadData: function () {
-				this.ApiGetRequest('/core-ui/ui/api/dataSources', testdata)
+				this.$parent.apiRequest('/core-ui/ui/api/dataSources', testdata)
 					.then(json => {
 						const extractDriverName = (hyperCat) => {
 							//the URL api will only pars http/s urs so replace tcp: with http:
