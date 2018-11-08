@@ -197,60 +197,98 @@ type DriverManifest struct {
 	Provides []DriverProvides `json:"provides"`
 }
 
+type ContainerStatus struct {
+	Name   string `json:"name"`
+	Status string `json:"status"`
+}
+
 func getDrivers(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		cmStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.cmStoreEndpoint)
 		manifestStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.manifestStoreEndpoint)
 
-		driverNames, err := manifestStoreClient.KVJSON.ListKeys(cfg.driverDatasource.DataSourceID)
+		vars := mux.Vars(r)
+		libDatabox.Info("Finding drivers for " + vars["name"])
+		manifest, err := manifestStoreClient.KVJSON.Read(cfg.allManifests.DataSourceID, vars["name"])
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
 			return
 		}
 
-		decoder := json.NewDecoder(r.Body)
-		var requirements []string
-		err = decoder.Decode(&requirements)
+		var appManifest libDatabox.Manifest
+		err = json.Unmarshal(manifest, &appManifest)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
 			return
 		}
 
+		appAsDriver := strings.Replace(vars["name"], "app-", "driver-", 1)
 		results := []string{}
-		for _, driverName := range driverNames {
-			manifest, err := manifestStoreClient.KVJSON.Read(cfg.allManifests.DataSourceID, driverName)
+		if appManifest.DataSources != nil && len(appManifest.DataSources) > 0 {
+			containerStatusJSON, err := cmStoreClient.KVJSON.Read(cfg.cmDataDataSource.DataSourceID, "containerStatus")
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
+				return
+			}
+			containerStatus := []ContainerStatus{}
+			err = json.Unmarshal(containerStatusJSON, &containerStatus)
+
+			driverNames, err := manifestStoreClient.KVJSON.ListKeys(cfg.driverDatasource.DataSourceID)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
 				return
 			}
 
-			var driverManifest DriverManifest
-			err = json.Unmarshal(manifest, &driverManifest)
-			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
-				return
-			}
-
-			var requirementList []string
-			for _, provision := range driverManifest.Provides {
-				for _, requirement := range requirements {
-					if provision.Type == requirement {
-						requirementList = append(requirementList, requirement)
+			for _, driverName := range driverNames {
+				installed := false
+				for _, container := range containerStatus {
+					if container.Name == driverName {
+						installed = true
 						break
 					}
 				}
-			}
 
-			if driverName == "driver-os-monitor" {
-				results = append(results, string(manifest))
-			} else if requirementList != nil {
-				results = append(results, string(manifest))
+				if !installed {
+					manifest, err := manifestStoreClient.KVJSON.Read(cfg.allManifests.DataSourceID, driverName)
+					if err != nil {
+						w.WriteHeader(http.StatusInternalServerError)
+						fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
+						return
+					}
+
+					var driverManifest DriverManifest
+					err = json.Unmarshal(manifest, &driverManifest)
+					if err != nil {
+						w.WriteHeader(http.StatusInternalServerError)
+						fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
+						return
+					}
+
+					found := false
+					for _, provision := range driverManifest.Provides {
+						if found {
+							break
+						}
+						for _, datasource := range appManifest.DataSources {
+							if provision.Type == datasource.Type {
+								found = true
+								break
+							}
+						}
+					}
+
+					// TODO Hack for testing purposes. Remove ASAP
+					if found || driverName == appAsDriver {
+						results = append(results, string(manifest))
+					}
+				}
 			}
 		}
 

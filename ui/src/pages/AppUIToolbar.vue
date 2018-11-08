@@ -64,7 +64,7 @@
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify({
-						name: this.ui,
+						name: this.app,
 					}),
 				})
 					.then(() => {

@@ -4,14 +4,14 @@
 	"private": true,
 	"scripts": {
 		"serve": "vue-cli-service serve",
-		"build": "vue-cli-service build",
+		"build": "vue-cli-service build --modern",
 		"build.test": "vue-cli-service build 'src/app.js'",
 		"build.app": "vue-cli-service build --dest '../../databox-app/www' 'src/app.js'",
 		"lint": "vue-cli-service lint"
 	},
 	"dependencies": {
-		"material-components-web": "^0.40.1",
-		"node-sass": "^4.9.3",
+		"material-components-web": "^0.41.0",
+		"node-sass": "^4.9.4",
 		"npm": "^6.4.1",
 		"sass-loader": "^7.1.0",
 		"vue": "^2.5.17",
@@ -19,9 +19,9 @@
 		"vue-router": "^3.0.1"
 	},
 	"devDependencies": {
-		"@vue/cli-plugin-babel": "^3.0.5",
-		"@vue/cli-plugin-eslint": "^3.0.5",
-		"@vue/cli-service": "^3.0.5",
+		"@vue/cli-plugin-babel": "^3.1.0",
+		"@vue/cli-plugin-eslint": "^3.1.3",
+		"@vue/cli-service": "^3.1.1",
 		"vue-template-compiler": "^2.5.17"
 	},
 	"eslintConfig": {

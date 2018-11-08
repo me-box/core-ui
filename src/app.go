@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"net/http"
@@ -55,7 +56,7 @@ func main() {
 	router.HandleFunc("/ui/api/containerStatus", containerStatus(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/containerStatus2", containerStatus2(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/dataSources", dataSources(&cfg)).Methods("GET")
-	router.HandleFunc("/ui/api/drivers", getDrivers(&cfg)).Methods("POST")
+	router.HandleFunc("/ui/api/drivers/{name}", getDrivers(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/manifest/{name}", getManifest(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/install", install(&cfg)).Methods("POST")
 	router.HandleFunc("/ui/api/uninstall", uninstall(&cfg)).Methods("POST")
@@ -63,8 +64,9 @@ func main() {
 	router.HandleFunc("/ui/api/qrcode.png", qrcode(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/cert.pem", certPub(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/cert.der", certPubDer(&cfg)).Methods("GET")
-	router.PathPrefix("/ui/{css|icons|js}").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir("./www")))).Methods("GET")
-	router.PathPrefix("/").Handler(http.HandlerFunc(serveIndex)).Methods("GET")
+	router.PathPrefix("/ui/{type:css|icons|js}/").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir("./www")))).Methods("GET")
+	router.PathPrefix("/ui/").Handler(http.HandlerFunc(serveIndex)).Methods("GET")
+	//router.Use(loggingMiddleware)
 
 	tlsConfig := &tls.Config{
 		PreferServerCipherSuites: true,
@@ -86,7 +88,18 @@ func main() {
 	libDatabox.Info("Exiting ....")
 }
 
+//func loggingMiddleware(next http.Handler) http.Handler {
+//	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//		// Do stuff here
+//		fmt.Println(r.Method + " " + r.RequestURI)
+//		// Call the next handler, which can be another middleware in the chain, or the final handler.
+//		next.ServeHTTP(w, r)
+//	})
+//}
+
 func serveIndex(w http.ResponseWriter, r *http.Request) {
-	libDatabox.Info(r.RequestURI)
-	http.ServeFile(w, r, "./www/index.html")
+	if strings.HasPrefix(r.URL.Path, "/ui/") {
+		libDatabox.Info(r.RequestURI)
+		http.ServeFile(w, r, "./www/index.html")
+	}
 }

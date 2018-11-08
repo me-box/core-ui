@@ -5,9 +5,6 @@
 	export default {
 		name: 'appUI',
 		props: ['app', 'path'],
-		data() {
-			return {ui: ""}
-		},
 		computed: {
 			url() {
 				let url = '/' + this.app + '/ui/';

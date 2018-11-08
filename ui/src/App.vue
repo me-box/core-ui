@@ -20,7 +20,7 @@
 						</div>
 
 						<div id="notification-menu" class="mdc-menu-surface mdc-list mdc-list--two-line">
-							<div class="mdc-list-item" v-for="item in notifications">
+							<div class="mdc-list-item" v-for="item in notifications" :key="item">
 								<div class="mdc-list-item__text">
 									<div class="mdc-list-item__primary-text">{{item}}</div>
 									<div class="mdc-list-item__secondary-text">Yesterday, 1:30pm</div>
@@ -61,8 +61,7 @@
 			}
 			this.authenticated = localStorage.getItem("databoxAuthenticated") === "true";
 			this.apiRequest('/core-ui/ui/api/containerStatus', {})
-				.then(blah => {
-					console.log(blah);
+				.then(() => {
 					this.authenticated = true;
 				})
 		},
@@ -76,12 +75,8 @@
 				opts.credentials = 'same-origin';
 				return fetch('https://' + this.databoxUrl + url, opts)
 					.then((response) => {
-						if (response.status === 401 || response.status === 404) {
-							this.authenticated = false;
-							console.log(response.status);
-							this.$router.replace("/login");
-						} else if (!response.ok) {
-							throw Error(response.status + ": " + response.statusText);
+						if (!response.ok) {
+							throw {message: response.statusText, status: response.status};
 						} else {
 							return response;
 						}
@@ -90,8 +85,10 @@
 						return response.json()
 					})
 					.catch((err) => {
-						console.log(err);
-						if (this.isDev) {
+						if (err.status === 401 || err.status === 404) {
+							this.authenticated = false;
+							this.$router.replace("/login");
+						} else if (this.isDev) {
 							return cannedData
 						} else {
 							throw err;
@@ -126,7 +123,7 @@
 							return Promise.reject("Auth failed")
 						}
 					})
-					.catch((error) => {
+					.catch(() => {
 						if (this.isDev) {
 							this.authenticated = true;
 							this.$router.replace("/")
@@ -170,15 +167,15 @@
 	$mdc-theme-accent: #41b883;
 	$mdc-theme-background: #fff;
 
-	@import "@material/button/mdc-button";
-	@import "@material/card/mdc-card";
-	@import "@material/dialog/mdc-dialog";
-	@import "@material/list/mdc-list";
-	@import "@material/menu-surface/mdc-menu-surface";
-	@import "@material/select/mdc-select";
-	@import "@material/textfield/mdc-text-field";
-	@import "@material/theme/mdc-theme";
-	@import "@material/top-app-bar/mdc-top-app-bar";
+	@import "~@material/button/mdc-button";
+	@import "~@material/card/mdc-card";
+	@import "~@material/dialog/mdc-dialog";
+	@import "~@material/list/mdc-list";
+	@import "~@material/menu-surface/mdc-menu-surface";
+	@import "~@material/select/mdc-select";
+	@import "~@material/textfield/mdc-text-field";
+	@import "~@material/theme/mdc-theme";
+	@import "~@material/top-app-bar/mdc-top-app-bar";
 
 	html {
 		height: 100%;

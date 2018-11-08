@@ -8,7 +8,7 @@
 			      v-bind:icon="item.icon"
 			      :key="item.name"
 			      v-for="item in apps"
-			      v-if="(item.type === 'app' || item.type === 'driver') && item.name !== 'core-ui' && item.name !== 'core-app-store'"
+			      v-if="(item.type === 'app' || item.type === 'driver') && !exclusions.includes(item.name)"
 			      style="margin: 8px"/>
 		</div>
 	</div>
@@ -25,7 +25,11 @@
 		},
 		data() {
 			//get data from api later
-			return {apps: [], timerID: 0}
+			return {
+				apps: [],
+				timerID: 0,
+				exclusions: ["core-ui", "app-store"]
+			}
 		},
 		mounted() {
 			this.$parent.setTitle("Databox Dashboard", true);
@@ -72,8 +76,8 @@
 							changed = true;
 						}
 						if (changed) {
-							for(const app of json) {
-								if(app.route == null) {
+							for (const app of json) {
+								if (app.route == null) {
 									app.route = '/view/' + app.name;
 								}
 							}
