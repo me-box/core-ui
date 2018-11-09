@@ -9,7 +9,7 @@
 			url() {
 				let url = '/' + this.app + '/ui';
 				if (this.path) {
-					url = url + this.path;
+					url = url + '/' + this.path;
 				}
 
 				let search = window.location.search;
