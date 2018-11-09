@@ -11,7 +11,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	libDatabox "github.com/me-box/lib-go-databox"
+	"github.com/me-box/lib-go-databox"
 )
 
 type config struct {
@@ -66,7 +66,13 @@ func main() {
 	router.HandleFunc("/ui/cert.der", certPubDer(&cfg)).Methods("GET")
 	router.PathPrefix("/ui/{type:css|icons|js}/").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir("./www")))).Methods("GET")
 	router.PathPrefix("/ui/").Handler(http.HandlerFunc(serveIndex)).Methods("GET")
+
 	//router.Use(loggingMiddleware)
+	//cors := handlers.CORS(
+	//	handlers.AllowedHeaders([]string{"authorization"}),
+	//	handlers.AllowedOrigins([]string{"https://localhost","https://127.0.0.1"}),
+	//	handlers.AllowCredentials())
+	//router.Use(cors)
 
 	tlsConfig := &tls.Config{
 		PreferServerCipherSuites: true,
@@ -74,6 +80,7 @@ func main() {
 			tls.CurveP256,
 		},
 	}
+
 
 	srv := &http.Server{
 		Addr:         ":8080",

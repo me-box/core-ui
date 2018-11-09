@@ -6,6 +6,7 @@ RUN apk update && apk add build-base git zeromq-dev
 
 RUN go get -d github.com/me-box/lib-go-databox
 RUN go get -d github.com/gorilla/mux
+#RUN go get -d github.com/gorilla/handlers
 
 COPY ./src ./src
 RUN addgroup -S databox && adduser -S -g databox databox

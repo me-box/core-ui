@@ -57,22 +57,23 @@
 			if (localStorage.getItem("databoxUrl") !== null) {
 				this.databoxUrl = localStorage.getItem("databoxUrl");
 			} else if (!this.isMobile) {
-				this.url = window.location.hostname;
+				this.databoxUrl = window.location.hostname;
 			}
-			this.authenticated = localStorage.getItem("databoxAuthenticated") === "true";
 			this.apiRequest('/core-ui/ui/api/containerStatus', {})
 				.then(() => {
 					this.authenticated = true;
 				})
 		},
 		mounted() {
+			this.authenticated = localStorage.getItem("databoxAuthenticated") === "true";
 			if (this.authenticated) {
 				this.notificationMenu = new MDCMenuSurface(document.querySelector('#notification-menu'));
 			}
 		},
 		methods: {
 			apiRequest: function (url, cannedData, opts = {}) {
-				opts.credentials = 'same-origin';
+				opts.credentials = 'include';
+				opts.mode = 'cors';
 				return fetch('https://' + this.databoxUrl + url, opts)
 					.then((response) => {
 						if (!response.ok) {
@@ -103,7 +104,7 @@
 			login(url, password) {
 				this.databoxUrl = url;
 				localStorage.setItem('databoxURL', url);
-				fetch('https://' + url + '/api/connect', {
+				fetch('https://' + url + '/core-ui/ui/api/connect', {
 					method: "GET",
 					credentials: "include",
 					mode: "cors",
