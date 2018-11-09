@@ -1,1 +1,52 @@
-[{"name":"arbiter","type":"system","desiredState":"running","state":"running","status":"running"},{"name":"core-app-store-core-store","type":"store","desiredState":"running","state":"running","status":"running"},{"name":"core-ui","type":"app","desiredState":"running","state":"running","status":"running"},{"name":"core-app-store","type":"driver","desiredState":"running","state":"running","status":"running"},{"name":"export-service","type":"system","desiredState":"running","state":"running","status":"running"},{"name":"container-manager-core-store","type":"store","desiredState":"running","state":"running","status":"running"}]
+[
+	{
+		"name": "arbiter",
+		"type": "system",
+		"desiredState": "running",
+		"state": "running",
+		"status": "running"
+	},
+	{
+		"name": "app-data-tracker",
+		"type": "app",
+		"desiredState": "running",
+		"state": "running",
+		"status": "running"
+
+	},
+	{
+		"name": "core-app-store-core-store",
+		"type": "store",
+		"desiredState": "running",
+		"state": "running",
+		"status": "running"
+	},
+	{
+		"name": "core-ui",
+		"type": "app",
+		"desiredState": "running",
+		"state": "running",
+		"status": "running"
+	},
+	{
+		"name": "core-app-store",
+		"type": "driver",
+		"desiredState": "running",
+		"state": "running",
+		"status": "running"
+	},
+	{
+		"name": "export-service",
+		"type": "system",
+		"desiredState": "running",
+		"state": "running",
+		"status": "running"
+	},
+	{
+		"name": "container-manager-core-store",
+		"type": "store",
+		"desiredState": "running",
+		"state": "running",
+		"status": "running"
+	}
+]

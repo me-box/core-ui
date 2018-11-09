@@ -1,38 +1,114 @@
 <template>
-  <div>
-  <section style="padding:16px">
-      <h1>Welcome to Databox</h1>
-      <div>Databox lets you take control of your personal data and IoT devices.</div>
-      <div>Get started by:</div>
-
-    <p>Install a what you need from the&nbsp;<router-link :to="{ path:'appstore'}">App store</router-link>.<p>
-
-       <div style="display: flex;justify-content: center;align-items: center;"><a href="https://play.google.com/store/apps/details?id=io.databox.app" target="_top" style="margin-top: 5px; margin-right: 20px"><img alt="Get Databox on Google Play" height="60" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png"></a><a href="https://itunes.apple.com/us/app/databox-controller/id1295071825?mt=8" target="_top" style="display:inline-block;overflow:hidden;background:url(//linkmaker.itunes.apple.com/assets/shared/badges/en-us/appstore-lrg.svg) no-repeat;width:135px;height:40px;background-size:contain;" title="Get Databox on Apple App Store"></a></div><div style="display: flex;justify-content: center;align-items: center;"><a class="mdc-button mdc-button--compact" href="/core-ui/ui/api/qrcode.png">APP QR Config Code</a></div>
-       <div>For more help see the&nbsp;<a href="https://github.com/me-box/databox">documentation</a>.</div>
-    </section>
-    </div>
+	<div>
+		<div v-if="apps" id="appList">
+			<icon v-bind:name="item.name"
+			      v-bind:displayName="true"
+			      v-bind:updating="(item.state !== 'running')"
+			      v-bind:route="item.route"
+			      v-bind:icon="item.icon"
+			      :key="item.name"
+			      v-for="item in apps"
+			      v-if="(item.type === 'app' || item.type === 'driver') && !exclusions.includes(item.name)"
+			      style="margin: 8px"/>
+		</div>
+	</div>
 </template>
 <script>
+	import testdata from '../testData/status.json'
+	import Icon from '../components/AppIcon.vue'
 
-export default {
-  name: 'home',
-  props: {},
-  mounted: function () {
-    let devmode = localStorage.getItem('dev')
-    if (this.$parent.authenticated == "false" && devmode != "true") {
-      this.$router.push('login')
-    }
-  }
-}
-
+	export default {
+		name: 'Home',
+		props: {},
+		components: {
+			Icon,
+		},
+		data() {
+			//get data from api later
+			return {
+				apps: [],
+				timerID: 0,
+				exclusions: ["core-ui", "app-store"]
+			}
+		},
+		mounted() {
+			this.$parent.setTitle("Databox Dashboard", true);
+			this.loadData();
+			this.timerID = setInterval(() => {
+				this.loadData();
+			}, 1000);
+		},
+		destroyed() {
+			clearInterval(this.timerID)
+		},
+		methods: {
+			loadData() {
+				this.$parent.apiRequest('/core-ui/ui/api/containerStatus', testdata)
+					.then(json => {
+						let changed = false;
+						json.push({
+							name: "Settings",
+							type: "app",
+							state: "running",
+							icon: "settings",
+							route: "/settings"
+						});
+						json.push({
+							name: "App Store",
+							type: "app",
+							state: "running",
+							icon: "apps",
+							route: "/store"
+						});
+						json.sort((a, b) => {
+							return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+						});
+						if (this.apps.length === json.length) {
+							for (let step = 0; step < this.apps.length; step++) {
+								let app1 = this.apps[step];
+								let app2 = json[step];
+								if ((app1.name !== app2.name) || (app1.status !== app2.status)) {
+									changed = true;
+									break;
+								}
+							}
+						} else {
+							changed = true;
+						}
+						if (changed) {
+							for (const app of json) {
+								if (app.route == null) {
+									app.route = '/view/' + app.name;
+								}
+							}
+							this.apps = json;
+						}
+					})
+			},
+			GoToUI(appName) {
+				this.$router.push("view?ui=" + appName)
+			},
+			Restart(appName) {
+				alert("Install " + appName)
+			},
+			Uninstall(appName) {
+				alert("Uninstall" + appName)
+			}
+		}
+	}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-div {
-  padding: 5px;
-}
-section {
-  display: block;
-}
+	#appList {
+		display: flex;
+		flex-wrap: wrap;
+		margin: 24px;
+	}
+
+	@media (max-width: 479px) {
+		#appList {
+			margin: 16px;
+		}
+	}
 </style>

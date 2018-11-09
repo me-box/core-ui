@@ -4,13 +4,14 @@ import (
 	"crypto/tls"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"net/http"
 
 	"github.com/gorilla/mux"
 
-	libDatabox "github.com/me-box/lib-go-databox"
+	"github.com/me-box/lib-go-databox"
 )
 
 type config struct {
@@ -55,6 +56,7 @@ func main() {
 	router.HandleFunc("/ui/api/containerStatus", containerStatus(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/containerStatus2", containerStatus2(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/dataSources", dataSources(&cfg)).Methods("GET")
+	router.HandleFunc("/ui/api/drivers/{name}", getDrivers(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/manifest/{name}", getManifest(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/install", install(&cfg)).Methods("POST")
 	router.HandleFunc("/ui/api/uninstall", uninstall(&cfg)).Methods("POST")
@@ -62,8 +64,15 @@ func main() {
 	router.HandleFunc("/ui/api/qrcode.png", qrcode(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/cert.pem", certPub(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/cert.der", certPubDer(&cfg)).Methods("GET")
-	router.HandleFunc("/ui/{appstore|datasources|settings|databoxstatus|install|restart|uninstall|view|login}", serveIndex).Methods("GET")
-	router.PathPrefix("/ui").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir("./www"))))
+	router.PathPrefix("/ui/{type:css|icons|js}/").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir("./www")))).Methods("GET")
+	router.PathPrefix("/ui/").Handler(http.HandlerFunc(serveIndex)).Methods("GET")
+
+	//router.Use(loggingMiddleware)
+	//cors := handlers.CORS(
+	//	handlers.AllowedHeaders([]string{"authorization"}),
+	//	handlers.AllowedOrigins([]string{"https://localhost","https://127.0.0.1"}),
+	//	handlers.AllowCredentials())
+	//router.Use(cors)
 
 	tlsConfig := &tls.Config{
 		PreferServerCipherSuites: true,
@@ -71,6 +80,7 @@ func main() {
 			tls.CurveP256,
 		},
 	}
+
 
 	srv := &http.Server{
 		Addr:         ":8080",
@@ -85,6 +95,18 @@ func main() {
 	libDatabox.Info("Exiting ....")
 }
 
+//func loggingMiddleware(next http.Handler) http.Handler {
+//	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//		// Do stuff here
+//		fmt.Println(r.Method + " " + r.RequestURI)
+//		// Call the next handler, which can be another middleware in the chain, or the final handler.
+//		next.ServeHTTP(w, r)
+//	})
+//}
+
 func serveIndex(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./www/index.html")
+	if strings.HasPrefix(r.URL.Path, "/ui/") {
+		libDatabox.Info(r.RequestURI)
+		http.ServeFile(w, r, "./www/index.html")
+	}
 }

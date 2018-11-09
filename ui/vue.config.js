@@ -1,4 +1,11 @@
 // vue.config.js
 module.exports = {
-    baseUrl: '/core-ui/ui/'
-  }
+	baseUrl: '',
+	css: {
+		loaderOptions: {
+			sass: {
+				includePaths: [__dirname  + '/node_modules'],
+			},
+		},
+	},
+};

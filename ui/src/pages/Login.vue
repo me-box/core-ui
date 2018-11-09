@@ -1,68 +1,97 @@
 <template>
- <div>
-   <form class="login" @submit.prevent="login">
-     <h1>Log in to databox</h1>
-     <label>Databox url:&nbsp;</label>
-     <input required v-model="url" type="text" /><br/>
-     <label>Password:&nbsp;</label>
-     <input required v-model="password" autocomplete="current-password" type="password" placeholder="Password"/>
-     <hr/>
-     <button type="submit" v-on:click="login">Login</button>
-   </form>
- </div>
+	<div class="mdc-card">
+		<section class="material-icons mdc-theme--primary-bg"
+		         style="border-top-left-radius: 4px; border-top-right-radius: 4px">lock
+		</section>
+		<form @submit.prevent="login">
+			<div class="mdc-text-field" id="url-field">
+				<input id="url-field-input"
+				       v-model="url"
+				       type="text"
+				       class="mdc-text-field__input"
+				       required
+				       autocomplete="username"
+				       :autofocus="isMobile">
+				<label class="mdc-floating-label" for="url-field-input">Databox URL</label>
+				<div class="mdc-line-ripple"></div>
+			</div>
+			<div class="mdc-text-field" id="password-field">
+				<input id="password-field-input"
+				       v-model="password"
+				       type="password"
+				       class="mdc-text-field__input"
+				       required
+				       autocomplete="current-password"
+				       :autofocus="!isMobile">
+				<label class="mdc-floating-label" for="password-field-input">Password</label>
+				<div class="mdc-line-ripple"></div>
+			</div>
+			<div style="display: flex">
+				<button type="button" v-if="isMobile" class="mdc-button" @click="scan">Scan QR</button>
+				<button type="submit" class="mdc-button" :disabled="!valid">Login</button>
+			</div>
+		</form>
+
+		<section class="mdc-theme--primary-bg"></section>
+	</div>
 </template>
 <script>
-export default {
-  name: 'logIn',
-  props: {},
-  data: function () {
-      return {
-          password: "",
-          url: "127.0.0.1"
-      }
-  },
-  methods: {
-      login: function () {
-          let _this = this
-            fetch('https://'+this.url+'/api/connect', {
-                    method: "GET",
-                    credentials: "include",
-                    mode: "cors",
-                    headers: {
-                        'Authorization':"Token " + this.password,
-                    },
-                })
-                .then((response) => {
-                    if (response.status == 200) {
-                        localStorage.setItem('databoxAuthenticated', "true")
-                        this.$parent.authenticated = "true"
-                        this.$router.push("/")
-                    } else {
-                        return Promise.reject("Auth failed")
-                    }
-                })
-                .catch((error) => {
-                    let devmode = localStorage.getItem('dev')
-                    if (devmode == "true") {
-                        localStorage.setItem('databoxURL', this.url)
-                        localStorage.setItem('databoxAuthenticated', "true")
-                        this.$parent.authenticated = "true"
-                        this.$router.push("/")
-                    } else {
-                        this.$parent.authenticated = "false"
-                        localStorage.setItem('databoxAuthenticated', "false")
-                        alert("Error trying to log in. Sorry.")
-                    }
-                });
-      }
-  }
-}
+	import {MDCTextField} from '@material/textfield';
+
+	export default {
+		name: 'logIn',
+		props: {},
+		data: function () {
+			return {
+				password: "",
+				url: "",
+				error: ""
+			}
+		},
+		computed: {
+			valid: function () {
+				return this.url && this.password;
+			}
+		},
+		mounted: function () {
+			new MDCTextField(document.querySelector('#url-field'));
+			new MDCTextField(document.querySelector('#password-field'));
+		},
+		created: function () {
+			this.url = this.$parent.databoxUrl;
+		},
+		methods: {
+			scan: function () {
+				if (this.isMobile) {
+					this.$router.push('/scan');
+				}
+			},
+			login: function () {
+				this.$parent.login(this.url, this.password);
+			}
+		}
+	}
 </script>
 <style scoped>
-div {
-  padding: 5px;
-}
-section {
-  display: block;
-}
+	section {
+		color: white;
+		display: block;
+		padding: 8px;
+		text-align: center;
+	}
+
+	form {
+		padding: 4px 32px;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.mdc-text-field {
+		margin-top: 8px;
+	}
+
+	button {
+		width: 100%;
+		margin: 8px 0;
+	}
 </style>
