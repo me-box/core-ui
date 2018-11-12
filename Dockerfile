@@ -4,8 +4,8 @@ ENV GOPATH="/go"
 RUN apk update && apk add build-base git zeromq-dev
 #COPY . . if you update the libs below build with --no-cache
 
-RUN go get -d github.com/me-box/lib-go-databox
 RUN go get -d github.com/gorilla/mux
+RUN go get -d github.com/me-box/lib-go-databox
 #RUN go get -d github.com/gorilla/handlers
 
 COPY ./src ./src
