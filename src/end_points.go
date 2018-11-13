@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -207,7 +208,6 @@ func getDrivers(config *config) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		cmStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.cmStoreEndpoint)
 		manifestStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.manifestStoreEndpoint)
 
 		vars := mux.Vars(r)
@@ -230,13 +230,14 @@ func getDrivers(config *config) func(w http.ResponseWriter, r *http.Request) {
 		results := []string{}
 		if appManifest.DataSources != nil && len(appManifest.DataSources) > 0 {
 			libDatabox.Info("App requires datasources trying to locate drivers.... ")
-
-			containerStatusJSON, err := cmStoreClient.KVJSON.Read(cfg.cmDataDataSource.DataSourceID, "containerStatus")
+			//TODO this needs to come form FUNC API
+			containerStatusResponse, err := callCMFunc(cfg, "ServiceStatus")
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
 				return
 			}
+			containerStatusJSON := containerStatusResponse.Response
 			containerStatus := []ContainerStatus{}
 			err = json.Unmarshal(containerStatusJSON, &containerStatus)
 
@@ -326,7 +327,7 @@ func getManifest(config *config) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func containerStatus(config *config) func(w http.ResponseWriter, r *http.Request) {
+/*func containerStatus(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -344,25 +345,17 @@ func containerStatus(config *config) func(w http.ResponseWriter, r *http.Request
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `%s`, containerStatus)
 	}
-}
+}*/
 
-func containerStatus2(config *config) func(w http.ResponseWriter, r *http.Request) {
+func containerStatus(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		libDatabox.Info("Calling " + cfg.cmAPIServiceStatus.DataSourceID)
-		cmStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.cmStoreEndpoint)
-		containerStatusChan, err := cmStoreClient.FUNC.Call("ServiceStatus", []byte{}, libDatabox.ContentTypeJSON)
+
+		containerStatus, err := callCMFunc(cfg, "ServiceStatus")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "Can't call ServiceStatus %s", err.Error())
-			return
-		}
-		containerStatus := <-containerStatusChan
-
-		if containerStatus.Status != libDatabox.FuncStatusOK {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintf(w, "Error calling  ServiceStatus %d: %s", containerStatus.Status, string(containerStatus.Response))
 			return
 		}
 
@@ -373,6 +366,41 @@ func containerStatus2(config *config) func(w http.ResponseWriter, r *http.Reques
 }
 
 func dataSources(config *config) func(w http.ResponseWriter, r *http.Request) {
+	cfg := config
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		datasources, err := callCMFunc(cfg, "ListAllDatasources")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
+			return
+		}
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `%s`, datasources.Response)
+	}
+}
+
+func callCMFunc(config *config, functionName string) (libDatabox.FuncResponse, error) {
+
+	cmStoreClient := libDatabox.NewDefaultCoreStoreClient(config.cmStoreEndpoint)
+	libDatabox.Info("Calling " + functionName)
+	respChan, err := cmStoreClient.FUNC.Call(functionName, []byte{}, libDatabox.ContentTypeJSON)
+	if err != nil {
+		return libDatabox.FuncResponse{}, errors.New("Error calling " + functionName)
+	}
+
+	resp := <-respChan
+
+	if resp.Status != libDatabox.FuncStatusOK {
+		return resp, errors.New("Error getting " + functionName)
+	}
+
+	return resp, nil
+
+}
+
+/*func dataSources(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -390,4 +418,4 @@ func dataSources(config *config) func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `%s`, datasources)
 	}
-}
+}*/
