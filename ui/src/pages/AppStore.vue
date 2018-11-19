@@ -6,7 +6,8 @@
 			      :key="item"
 			      :name="item"
 			      :displayName="true"
-			      :route="'/install/' + item"
+			      :banner="isInstalled(item) ? 'installed' : null"
+			      :route="isInstalled(item) ? '/view/' + item : '/install/' + item"
 			      style="margin: 8px"/>
 		</div>
 	</div>
@@ -25,7 +26,7 @@
 		},
 		data() {
 			//get data from api later
-			return {apps: [], drivers: [], timerID: 0}
+			return {apps: [], drivers: [], installed: [], timerID: 0}
 		},
 		mounted() {
 			this.loadData();
@@ -35,7 +36,7 @@
 
 			this.$parent.setTitle("Databox App Store");
 		},
-		destroyed: function () {
+		destroyed() {
 			clearInterval(this.timerID)
 		},
 		methods: {
@@ -43,12 +44,19 @@
 				this.$parent.apiRequest("/core-ui/ui/api/appStore", testdata)
 					.then((data) => {
 						let appList = data.apps;
-						Array.prototype.push.apply(appList,data.drivers);
+						Array.prototype.push.apply(appList, data.drivers);
 						appList.sort((a, b) => {
 							a.localeCompare(b);
 						});
 						this.apps = appList;
+					});
+				this.$parent.apiRequest("/core-ui/ui/api/containerStatus", testdata)
+					.then((data) => {
+						this.installed = data.map(item => item.name);
 					})
+			},
+			isInstalled(app) {
+				return this.installed.indexOf(app) > -1
 			}
 		}
 	}

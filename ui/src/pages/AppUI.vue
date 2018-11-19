@@ -31,7 +31,6 @@
 			this.$parent.setTitle(this.app);
 		},
 	}
-
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
