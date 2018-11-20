@@ -104,7 +104,7 @@
 			login(url, password) {
 				this.databoxUrl = url;
 				localStorage.setItem('databoxURL', url);
-				fetch('https://' + url + '/core-ui/ui/api/connect', {
+				return fetch('https://' + url + '/core-ui/ui/api/connect', {
 					method: "GET",
 					credentials: "include",
 					mode: "cors",
@@ -112,6 +112,13 @@
 						'Authorization': "Token " + password,
 					},
 				})
+					.then((response) => {
+						if (!response.ok) {
+							throw {message: response.statusText, status: response.status};
+						} else {
+							return response;
+						}
+					})
 					.then((response) => {
 						return response.text()
 					})
@@ -124,12 +131,13 @@
 							return Promise.reject("Auth failed")
 						}
 					})
-					.catch(() => {
+					.catch((error) => {
 						if (this.isDev) {
 							this.authenticated = true;
 							this.$router.replace("/")
 						} else {
 							this.authenticated = false;
+							throw error;
 						}
 					});
 			},
