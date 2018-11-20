@@ -165,7 +165,7 @@
 				if (this.allowInstall) {
 					if (Array.isArray(this.manifest.datasources)) {
 						this.manifest.datasources.forEach((ds, index, arr) => {
-							arr[index].hypercat = this.selectedDataSources.get(ds["clientid"]).hypercat
+							arr[index].hypercat = this.selectedDataSources.get(ds["clientid"])
 						});
 					}
 					this.$parent.apiRequest('/core-ui/ui/api/install', {}, {
@@ -196,8 +196,7 @@
 							manifest: driver,
 						}),
 					})
-						.then((result) => {
-							console.log(result);
+						.then(() => {
 							this.timerID = setInterval(() => {
 								this.checkDriverInstalled(driver.name);
 							}, 1000);

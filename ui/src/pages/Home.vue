@@ -36,7 +36,7 @@
 			this.loadData();
 			this.timerID = setInterval(() => {
 				this.loadData();
-			}, 1000);
+			}, 2000);
 		},
 		destroyed() {
 			clearInterval(this.timerID)

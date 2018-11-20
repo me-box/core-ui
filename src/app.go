@@ -15,14 +15,15 @@ import (
 )
 
 type config struct {
-	cmAPIServiceStatus    libDatabox.DataSourceMetadata
-	cmAPIDataSource       libDatabox.DataSourceMetadata
-	cmDataDataSource      libDatabox.DataSourceMetadata
-	appsDatasource        libDatabox.DataSourceMetadata
-	driverDatasource      libDatabox.DataSourceMetadata
-	allManifests          libDatabox.DataSourceMetadata
-	cmStoreEndpoint       string
-	manifestStoreEndpoint string
+	cmAPIServiceStatus      libDatabox.DataSourceMetadata
+	cmAPIListAllDatasources libDatabox.DataSourceMetadata
+	cmAPIDataSource         libDatabox.DataSourceMetadata
+	cmDataDataSource        libDatabox.DataSourceMetadata
+	appsDatasource          libDatabox.DataSourceMetadata
+	driverDatasource        libDatabox.DataSourceMetadata
+	allManifests            libDatabox.DataSourceMetadata
+	cmStoreEndpoint         string
+	manifestStoreEndpoint   string
 }
 
 func main() {
@@ -30,6 +31,7 @@ func main() {
 	//Read in the databox data passed to the app
 	cmAPIDataSource, DATABOX_ZMQ_ENDPOINT_CM, _ := libDatabox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_CM_API"))
 	cmAPIServiceStatus, _, _ := libDatabox.HypercatToDataSourceMetadata(os.Getenv("CM_API_ServiceStatus"))
+	cmAPIListAllDatasources, _, _ := libDatabox.HypercatToDataSourceMetadata(os.Getenv("CM_API_ListAllDatasources"))
 	cmDataDataSource, _, _ := libDatabox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_CM_DATA"))
 	appsDatasource, DATABOX_ZMQ_ENDPOINT_APP, _ := libDatabox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_APPS"))
 	driverDatasource, _, _ := libDatabox.HypercatToDataSourceMetadata(os.Getenv("DATASOURCE_DRIVERS"))
@@ -37,14 +39,15 @@ func main() {
 
 	//create a config object to pass to handlers
 	cfg := config{
-		cmAPIServiceStatus:    cmAPIServiceStatus,
-		cmAPIDataSource:       cmAPIDataSource,
-		cmDataDataSource:      cmDataDataSource,
-		appsDatasource:        appsDatasource,
-		driverDatasource:      driverDatasource,
-		allManifests:          allManifests,
-		cmStoreEndpoint:       DATABOX_ZMQ_ENDPOINT_CM,
-		manifestStoreEndpoint: DATABOX_ZMQ_ENDPOINT_APP,
+		cmAPIServiceStatus:      cmAPIServiceStatus,
+		cmAPIListAllDatasources: cmAPIListAllDatasources,
+		cmAPIDataSource:         cmAPIDataSource,
+		cmDataDataSource:        cmDataDataSource,
+		appsDatasource:          appsDatasource,
+		driverDatasource:        driverDatasource,
+		allManifests:            allManifests,
+		cmStoreEndpoint:         DATABOX_ZMQ_ENDPOINT_CM,
+		manifestStoreEndpoint:   DATABOX_ZMQ_ENDPOINT_APP,
 	}
 
 	//setup webserver routes
@@ -54,7 +57,7 @@ func main() {
 	router.HandleFunc("/status", statusEndpoint).Methods("GET")
 	router.HandleFunc("/ui/api/appStore", getApps(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/containerStatus", containerStatus(&cfg)).Methods("GET")
-	router.HandleFunc("/ui/api/containerStatus2", containerStatus2(&cfg)).Methods("GET")
+	//router.HandleFunc("/ui/api/containerStatus2", containerStatus2(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/dataSources", dataSources(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/drivers/{name}", getDrivers(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/manifest/{name}", getManifest(&cfg)).Methods("GET")

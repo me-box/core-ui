@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -207,7 +208,6 @@ func getDrivers(config *config) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		cmStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.cmStoreEndpoint)
 		manifestStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.manifestStoreEndpoint)
 
 		vars := mux.Vars(r)
@@ -227,15 +227,17 @@ func getDrivers(config *config) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		appAsDriver := strings.Replace(vars["name"], "app-", "driver-", 1)
 		results := []string{}
 		if appManifest.DataSources != nil && len(appManifest.DataSources) > 0 {
-			containerStatusJSON, err := cmStoreClient.KVJSON.Read(cfg.cmDataDataSource.DataSourceID, "containerStatus")
+			libDatabox.Info("App requires datasources trying to locate drivers.... ")
+			//TODO this needs to come form FUNC API
+			containerStatusResponse, err := callCMFunc(cfg, "ServiceStatus")
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
 				return
 			}
+			containerStatusJSON := containerStatusResponse.Response
 			containerStatus := []ContainerStatus{}
 			err = json.Unmarshal(containerStatusJSON, &containerStatus)
 
@@ -247,7 +249,10 @@ func getDrivers(config *config) func(w http.ResponseWriter, r *http.Request) {
 			}
 
 			for _, driverName := range driverNames {
+				libDatabox.Info("Checking " + driverName + " for matching datasources")
 				installed := false
+
+				//is the driver installed?
 				for _, container := range containerStatus {
 					if container.Name == driverName {
 						installed = true
@@ -255,14 +260,17 @@ func getDrivers(config *config) func(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 
+				//only offer to install the driver if its not already installed
 				if !installed {
+
+					//get the driver manifest
+					libDatabox.Info("Driver " + driverName + " not installed checking manifest")
 					manifest, err := manifestStoreClient.KVJSON.Read(cfg.allManifests.DataSourceID, driverName)
 					if err != nil {
 						w.WriteHeader(http.StatusInternalServerError)
 						fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
 						return
 					}
-
 					var driverManifest DriverManifest
 					err = json.Unmarshal(manifest, &driverManifest)
 					if err != nil {
@@ -279,14 +287,10 @@ func getDrivers(config *config) func(w http.ResponseWriter, r *http.Request) {
 						for _, datasource := range appManifest.DataSources {
 							if provision.Type == datasource.Type {
 								found = true
+								results = append(results, string(manifest))
 								break
 							}
 						}
-					}
-
-					// TODO Hack for testing purposes. Remove ASAP
-					if found || driverName == appAsDriver {
-						results = append(results, string(manifest))
 					}
 				}
 			}
@@ -323,7 +327,7 @@ func getManifest(config *config) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func containerStatus(config *config) func(w http.ResponseWriter, r *http.Request) {
+/*func containerStatus(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -341,25 +345,17 @@ func containerStatus(config *config) func(w http.ResponseWriter, r *http.Request
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `%s`, containerStatus)
 	}
-}
+}*/
 
-func containerStatus2(config *config) func(w http.ResponseWriter, r *http.Request) {
+func containerStatus(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		libDatabox.Info("Calling " + cfg.cmAPIServiceStatus.DataSourceID)
-		cmStoreClient := libDatabox.NewDefaultCoreStoreClient(cfg.cmStoreEndpoint)
-		containerStatusChan, err := cmStoreClient.FUNC.Call("ServiceStatus", []byte{}, libDatabox.ContentTypeJSON)
+
+		containerStatus, err := callCMFunc(cfg, "ServiceStatus")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "Can't call ServiceStatus %s", err.Error())
-			return
-		}
-		containerStatus := <-containerStatusChan
-
-		if containerStatus.Status != libDatabox.FuncStatusOK {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintf(w, "Error calling  ServiceStatus %d: %s", containerStatus.Status, string(containerStatus.Response))
 			return
 		}
 
@@ -370,6 +366,41 @@ func containerStatus2(config *config) func(w http.ResponseWriter, r *http.Reques
 }
 
 func dataSources(config *config) func(w http.ResponseWriter, r *http.Request) {
+	cfg := config
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		datasources, err := callCMFunc(cfg, "ListAllDatasources")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "%s %s", "500 internal server error.", err.Error())
+			return
+		}
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `%s`, datasources.Response)
+	}
+}
+
+func callCMFunc(config *config, functionName string) (libDatabox.FuncResponse, error) {
+
+	cmStoreClient := libDatabox.NewDefaultCoreStoreClient(config.cmStoreEndpoint)
+	libDatabox.Info("Calling " + functionName)
+	respChan, err := cmStoreClient.FUNC.Call(functionName, []byte{}, libDatabox.ContentTypeJSON)
+	if err != nil {
+		return libDatabox.FuncResponse{}, errors.New("Error calling " + functionName)
+	}
+
+	resp := <-respChan
+
+	if resp.Status != libDatabox.FuncStatusOK {
+		return resp, errors.New("Error getting " + functionName)
+	}
+
+	return resp, nil
+
+}
+
+/*func dataSources(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -387,4 +418,4 @@ func dataSources(config *config) func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, `%s`, datasources)
 	}
-}
+}*/
