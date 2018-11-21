@@ -89,6 +89,7 @@
 						if (err.status === 401 || err.status === 404) {
 							this.authenticated = false;
 							this.$router.replace("/login");
+							throw err;
 						} else if (this.isDev) {
 							return cannedData
 						} else {
@@ -99,7 +100,7 @@
 			logout() {
 				this.authenticated = false;
 				localStorage.setItem('databoxAuthenticated', 'false');
-				this.$router.replace("/");
+				this.$router.replace("/login");
 			},
 			login(url, password) {
 				this.databoxUrl = url;
