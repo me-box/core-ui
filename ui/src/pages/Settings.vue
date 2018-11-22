@@ -27,14 +27,9 @@
 	export default {
 		name: 'settings',
 		props: {},
-		created: function () {
-			let devmode = localStorage.getItem('dev');
-			if (this.$parent.authenticated === "false" && devmode !== "true") {
-				this.$router.push('login')
-			}
-		},
 		mounted: function () {
-			this.$parent.setTitle("Databox Settings");
+			this.$parent.title = "Databox Settings";
+			this.$parent.backRoute = "/";
 		},
 		methods: {
 			goto: function (path) {

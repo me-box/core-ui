@@ -11,9 +11,14 @@
 				       class="mdc-text-field__input"
 				       required
 				       autocomplete="username"
+				       :disabled="connecting"
 				       :autofocus="isMobile">
 				<label class="mdc-floating-label" for="url-field-input">Databox URL</label>
 				<div class="mdc-line-ripple"></div>
+			</div>
+			<div v-if="urlError" class="mdc-text-field-helper-text--persistent mdc-text-field-helper-text error"
+			     aria-hidden="true">
+				{{ urlError }}
 			</div>
 			<div class="mdc-text-field" id="password-field">
 				<input id="password-field-input"
@@ -22,11 +27,20 @@
 				       class="mdc-text-field__input"
 				       required
 				       autocomplete="current-password"
+				       :disabled="connecting"
 				       :autofocus="!isMobile">
 				<label class="mdc-floating-label" for="password-field-input">Password</label>
 				<div class="mdc-line-ripple"></div>
 			</div>
-			<div style="display: flex">
+			<div v-if="passwordError" class="mdc-text-field-helper-text--persistent mdc-text-field-helper-text error"
+			     aria-hidden="true">
+				{{ passwordError }}
+			</div>
+
+			<div v-if="connecting" style="display: flex; justify-content: center; padding: 8px">
+				<Spinner/>
+			</div>
+			<div v-else style="display: flex">
 				<button type="button" v-if="isMobile" class="mdc-button" @click="scan">Scan QR</button>
 				<button type="submit" class="mdc-button" :disabled="!valid">Login</button>
 			</div>
@@ -37,37 +51,55 @@
 </template>
 <script>
 	import {MDCTextField} from '@material/textfield';
+	import Spinner from '../components/Spinner.vue';
 
 	export default {
 		name: 'logIn',
 		props: {},
-		data: function () {
+		components: {Spinner},
+		data() {
 			return {
 				password: "",
 				url: "",
-				error: ""
+				passwordError: "",
+				urlError: "",
+				connecting: false
 			}
 		},
 		computed: {
-			valid: function () {
+			valid() {
 				return this.url && this.password;
 			}
 		},
-		mounted: function () {
+		mounted() {
 			new MDCTextField(document.querySelector('#url-field'));
 			new MDCTextField(document.querySelector('#password-field'));
 		},
-		created: function () {
+		created() {
 			this.url = this.$parent.databoxUrl;
 		},
 		methods: {
-			scan: function () {
+			scan() {
 				if (this.isMobile) {
 					this.$router.push('/scan');
 				}
 			},
-			login: function () {
-				this.$parent.login(this.url, this.password);
+			login() {
+				this.connecting = true;
+				this.$parent.login(this.url, this.password)
+					.catch((error) => {
+						console.log(error);
+						this.connecting = false;
+						this.passwordError = "";
+						this.urlError = "";
+						if (error instanceof TypeError) {
+							this.urlError = "Could not find a Databox here";
+						} else if (error.status === 401) {
+							this.passwordError = "Login Failed. Check password.";
+						} else if (error.status === 404) {
+							this.urlError = "Could not find a Databox here";
+						}
+					})
 			}
 		}
 	}
@@ -84,6 +116,10 @@
 		padding: 4px 32px;
 		display: flex;
 		flex-direction: column;
+	}
+
+	.error {
+		color: #B33 !important;
 	}
 
 	.mdc-text-field {

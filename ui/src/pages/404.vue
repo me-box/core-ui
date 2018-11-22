@@ -8,6 +8,10 @@
 	export default {
 		name: '404',
 		props: {},
+		mounted() {
+			this.$parent.title = 'Databox Dashboard';
+			this.$parent.backRoute = '/';
+		}
 	}
 
 </script>

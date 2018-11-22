@@ -3,6 +3,8 @@ import Vue from "./vueCore";
 import router from "./vueRouter";
 import Scan from "./pages/Scan.vue";
 
+router.base = '';
+router.mode = 'hash';
 router.addRoutes([
 	{path: '/scan', component: Scan}
 ]);

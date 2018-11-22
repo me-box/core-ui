@@ -7,12 +7,12 @@
 			</svg>
 			<template v-else-if="icon">{{ icon }}</template>
 			<template v-else>{{ displayLetter }}</template>
+			<div v-if="banner" class="banner">{{ banner }}</div>
 		</div>
 		<div v-if="display" class="text">{{ name }}</div>
 	</div>
 </template>
 <script>
-
 	export default {
 		name: 'icon',
 		props: {
@@ -21,18 +21,19 @@
 			updating: Boolean,
 			icon: String,
 			route: String,
-			letter: String
+			letter: String,
+			banner: String
 		},
 		computed: {
-			displayLetter: function () {
+			displayLetter() {
 				return this.letter || this.name.replace('-', '').replace('_', '').replace("app", '').replace("driver", '').replace('core', '')[0].toUpperCase()
 			},
-			display: function () {
+			display() {
 				return typeof(this.displayName) === "undefined" ? true : this.displayName;
 			}
 		},
 		methods: {
-			goto: function () {
+			goto() {
 				if (this.route && !this.updating) {
 					this.$router.push(this.route);
 				}
@@ -71,6 +72,18 @@
 		justify-content: center;
 		width: 128px;
 		border: 1px #456 solid;
+		position: relative;
+	}
+
+	.banner {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		font-size: 12px;
+		text-transform: uppercase;
+		background: rgba(0,0,0,0.2);
+		text-align: center;
 	}
 
 	.text {
