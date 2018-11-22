@@ -55,8 +55,8 @@
 </template>
 <script>
 	import {MDCDialog} from '@material/dialog';
-	import testdata from '../testData/DataSources.json'
-	import Icon from '../components/AppIcon.vue'
+	import testdata from '../testData/DataSources.json';
+	import Icon from '../components/AppIcon.vue';
 
 	export default {
 		name: 'databoxStatus',
@@ -73,7 +73,8 @@
 			}
 		},
 		mounted() {
-			this.$parent.setTitle(this.$route.params.app + ' Data');
+			this.$parent.title = this.app + ' Data';
+			this.$parent.backRoute = '/data';
 			this.deleteDialog = new MDCDialog(document.querySelector('#delete-dialog'));
 			this.loadData();
 			this.timerID = setInterval(() => {
@@ -125,7 +126,7 @@
 					})
 			},
 			goto: function (sourceName) {
-				this.$router.push('/datasource/' + sourceName);
+				this.$router.push('/data/' + this.app + '/' + sourceName);
 			},
 		}
 	}

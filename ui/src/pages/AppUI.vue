@@ -27,8 +27,8 @@
 			}
 		},
 		mounted() {
-			//get app name from Query string
-			this.$parent.setTitle(this.app);
+			this.$parent.title = this.app;
+			this.$parent.backRoute = "/";
 		},
 	}
 </script>

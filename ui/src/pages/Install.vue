@@ -54,7 +54,8 @@
 						</div>
 					</div>
 				</template>
-				<div v-else-if="manifest.datasources != null && manifest.datasources.length > 0" style="display: flex; flex-direction: column">
+				<div v-else-if="manifest.datasources != null && manifest.datasources.length > 0"
+				     style="display: flex; flex-direction: column">
 					<h3>Assign Data Sources to App</h3>
 					<DatasourceSelect v-for="ds in manifest.datasources"
 					                  :dataSource="ds"
@@ -143,7 +144,8 @@
 			}
 		},
 		mounted() {
-			this.$parent.setTitle("Install " + this.app);
+			this.$parent.title = "Install " + this.app;
+			this.$parent.backRoute = "/store"
 		},
 		beforeRouteUpdate(to, from, next) {
 			if (to.name === from.name) {

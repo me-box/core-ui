@@ -29,12 +29,14 @@
 			return {apps: [], drivers: [], installed: [], timerID: 0}
 		},
 		mounted() {
+			this.$parent.title = "Databox App Store";
+			this.$parent.backRoute = "/";
 			this.loadData();
 			this.timerID = setInterval(() => {
 				this.loadData();
 			}, 5000);
 
-			this.$parent.setTitle("Databox App Store");
+
 		},
 		destroyed() {
 			clearInterval(this.timerID)

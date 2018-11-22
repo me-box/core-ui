@@ -1,18 +1,21 @@
 import VueRouter from "vue-router";
 
-import AppData from './pages/AppData.vue'
-import AppStore from './pages/AppStore.vue'
-import AppStoreToolbar from './pages/AppStoreToolbar.vue'
+const Login = () => import('./pages/Login.vue');
+import NotFound from './pages/404.vue'
+
+import Home from './pages/Home.vue';
 import AppUI from './pages/AppUI.vue'
 import AppUIToolbar from './pages/AppUIToolbar.vue'
-import DataSource from './pages/DataSource.vue'
-import DataSources from './pages/DataSources.vue'
-import Home from './pages/Home.vue'
-import Install from './pages/Install.vue'
-import Login from './pages/Login.vue'
-import NotFound from './pages/404.vue'
-import Settings from './pages/Settings.vue'
-import SettingsSystem from './pages/SettingsSystem.vue'
+
+const AppStore = () => import(/* webpackChunkName: "group-store" */ './pages/AppStore.vue');
+const AppStoreToolbar = () => import(/* webpackChunkName: "group-store" */ './pages/AppStoreToolbar.vue');
+const Install = () => import(/* webpackChunkName: "group-store" */ './pages/Install.vue');
+
+const Settings = () => import(/* webpackChunkName: "group-settings" */ './pages/Settings.vue');
+const SettingsSystem = () => import(/* webpackChunkName: "group-settings" */ './pages/SettingsSystem.vue');
+const DataSource = () => import(/* webpackChunkName: "group-settings" */ './pages/DataSource.vue');
+const DataSources = () => import(/* webpackChunkName: "group-settings" */ './pages/DataSources.vue');
+const AppData = () => import(/* webpackChunkName: "group-settings" */ './pages/AppData.vue');
 
 const router = new VueRouter({
 	mode: 'history',
@@ -22,9 +25,10 @@ const router = new VueRouter({
 		{path: '/404', component: NotFound},
 		{path: '/data', component: DataSources},
 		{path: '/data/:app', component: AppData, props: true},
-		{path: '/datasource/:datasource', component: DataSource, props: true},
+		{path: '/data/:app/:datasource', component: DataSource, props: true},
 		{path: '/login', component: Login},
-		{path: '/store',  components: {
+		{
+			path: '/store', components: {
 				default: AppStore,
 				toolbar: AppStoreToolbar
 			},
@@ -46,7 +50,8 @@ const router = new VueRouter({
 				toolbar: AppUIToolbar
 			},
 			props: {default: true, toolbar: true}
-		}
+		},
+		{path: '*', component: NotFound}
 	]
 });
 
