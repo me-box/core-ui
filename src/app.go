@@ -24,6 +24,7 @@ type config struct {
 	allManifests            libDatabox.DataSourceMetadata
 	cmStoreEndpoint         string
 	manifestStoreEndpoint   string
+	cmStoreClient           *libDatabox.CoreStoreClient
 }
 
 func main() {
@@ -48,6 +49,7 @@ func main() {
 		allManifests:            allManifests,
 		cmStoreEndpoint:         DATABOX_ZMQ_ENDPOINT_CM,
 		manifestStoreEndpoint:   DATABOX_ZMQ_ENDPOINT_APP,
+		cmStoreClient:           libDatabox.NewDefaultCoreStoreClient(DATABOX_ZMQ_ENDPOINT_CM),
 	}
 
 	//setup webserver routes

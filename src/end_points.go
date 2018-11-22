@@ -383,7 +383,9 @@ func dataSources(config *config) func(w http.ResponseWriter, r *http.Request) {
 
 func callCMFunc(config *config, functionName string) (libDatabox.FuncResponse, error) {
 
-	cmStoreClient := libDatabox.NewDefaultCoreStoreClient(config.cmStoreEndpoint)
+	//cmStoreClient := libDatabox.NewDefaultCoreStoreClient(config.cmStoreEndpoint)
+	cmStoreClient := config.cmStoreClient
+
 	libDatabox.Info("Calling " + functionName)
 	respChan, err := cmStoreClient.FUNC.Call(functionName, []byte{}, libDatabox.ContentTypeJSON)
 	if err != nil {
