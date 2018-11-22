@@ -50,7 +50,7 @@
 
 	export default {
 		name: 'databoxStatus',
-		props: ['datasource'],
+		props: ['app','datasource'],
 		components: {
 			Icon,
 		},
@@ -63,7 +63,8 @@
 			}
 		},
 		mounted() {
-			this.$parent.setTitle(this.datasource + ' Data');
+			this.$parent.title = this.datasource + ' Data';
+			this.$parent.backRoute = "/data/" + this.app;
 			this.deleteDialog = new MDCDialog(document.querySelector('#delete-dialog'));
 		},
 		destroyed: function () {

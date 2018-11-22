@@ -3,20 +3,16 @@
 		<header class="mdc-top-app-bar" v-if="authenticated">
 			<div class="mdc-top-app-bar__row">
 				<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-					<a id="toolbarBack" v-on:click="back" class="material-icons mdc-top-app-bar__navigation-icon">
+					<a v-if="backRoute" v-on:click="back" class="material-icons mdc-top-app-bar__navigation-icon">
 						arrow_back
 					</a>
-					<span id="toolbarTitle" class="mdc-top-app-bar__title">Databox Dashboard</span>
+					<span class="mdc-top-app-bar__title">{{ title }}</span>
 				</section>
 				<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
 					<router-view name="toolbar" style="display: flex"></router-view>
-					<div class="material-icons mdc-top-app-bar__action-item" v-if="notifications.length === 0">
-						notifications_none
-					</div>
 					<div class="mdc-menu-surface--anchor">
-						<div class="material-icons mdc-top-app-bar__action-item" @click="openNotifications"
-						     v-if="notifications.length > 0">
-							notifications
+						<div class="material-icons mdc-top-app-bar__action-item" @click="openNotifications">
+							{{ (this.notifications.length > 0 ) ? 'notifications' : 'notifications_none'}}
 						</div>
 
 						<div id="notification-menu" class="mdc-menu-surface mdc-list mdc-list--two-line">
@@ -33,8 +29,11 @@
 		</header>
 
 		<div class="mdc-top-app-bar--fixed-adjust">
-			<div id="content">
-				<router-view></router-view>
+			<div v-if="connecting" id="content">
+				<Spinner />
+			</div>
+			<div v-else id="content">
+				<router-view />
 			</div>
 		</div>
 	</div>
@@ -42,12 +41,17 @@
 
 <script>
 	import {MDCMenuSurface} from '@material/menu-surface';
+	import Spinner from "./components/Spinner";
 
 	export default {
 		name: 'app',
+		components: {Spinner},
 		data() {
 			return {
+				title: 'Databox Dashboard',
+				backRoute: null,
 				databoxUrl: "localhost",
+				connecting: true,
 				authenticated: false,
 				notifications: [],
 				notificationMenu: null,
@@ -61,13 +65,20 @@
 			}
 			this.apiRequest('/core-ui/ui/api/containerStatus', {})
 				.then(() => {
+					this.connecting = false;
 					this.authenticated = true;
 				})
 		},
-		mounted() {
-			this.authenticated = localStorage.getItem("databoxAuthenticated") === "true";
-			if (this.authenticated) {
-				this.notificationMenu = new MDCMenuSurface(document.querySelector('#notification-menu'));
+		updated() {
+			if (this.authenticated && this.notificationMenu == null) {
+				this.notificationMenu = new MDCMenuSurface(document.getElementById('notification-menu'));
+			} else {
+				this.notificationMenu = null;
+			}
+		},
+		watch: {
+			title(val) {
+				document.title = val
 			}
 		},
 		methods: {
@@ -86,9 +97,11 @@
 						return response.json()
 					})
 					.catch((err) => {
+						this.connecting = false;
 						if (err.status === 401 || err.status === 404) {
 							this.authenticated = false;
 							this.$router.replace("/login");
+							throw err;
 						} else if (this.isDev) {
 							return cannedData
 						} else {
@@ -98,13 +111,12 @@
 			},
 			logout() {
 				this.authenticated = false;
-				localStorage.setItem('databoxAuthenticated', 'false');
-				this.$router.replace("/");
+				this.$router.replace("/login");
 			},
 			login(url, password) {
 				this.databoxUrl = url;
 				localStorage.setItem('databoxURL', url);
-				fetch('https://' + url + '/core-ui/ui/api/connect', {
+				return fetch('https://' + url + '/core-ui/ui/api/connect', {
 					method: "GET",
 					credentials: "include",
 					mode: "cors",
@@ -112,6 +124,13 @@
 						'Authorization': "Token " + password,
 					},
 				})
+					.then((response) => {
+						if (!response.ok) {
+							throw {message: response.statusText, status: response.status};
+						} else {
+							return response;
+						}
+					})
 					.then((response) => {
 						return response.text()
 					})
@@ -124,39 +143,22 @@
 							return Promise.reject("Auth failed")
 						}
 					})
-					.catch(() => {
+					.catch((error) => {
 						if (this.isDev) {
 							this.authenticated = true;
 							this.$router.replace("/")
 						} else {
 							this.authenticated = false;
+							throw error;
 						}
 					});
 			},
-			goto(page) {
-				this.$router.push(page);
-			},
 			back() {
-				this.$router.go(-1);
+				this.$router.push(this.backRoute);
 			},
 			openNotifications() {
-				console.log(this.notificationMenu);
-				this.notificationMenu.open = true;
-			},
-			setTitle(title, backHidden) {
-				let titleBar = document.getElementById('toolbarTitle');
-				if (titleBar != null) {
-					titleBar.innerText = title;
-				}
-				document.title = title;
-				let toolbarBack = document.getElementById('toolbarBack');
-				if (toolbarBack !== null) {
-					if (backHidden) {
-						toolbarBack.style.visibility = 'hidden';
-					}
-					else {
-						toolbarBack.style.visibility = 'visible';
-					}
+				if(this.notificationMenu != null && this.notifications.length > 0) {
+					this.notificationMenu.open = true;
 				}
 			}
 		}

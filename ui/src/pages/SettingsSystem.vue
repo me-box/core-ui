@@ -61,11 +61,12 @@
 			}
 		},
 		mounted: function () {
+			this.$parent.title = "Databox Settings";
+			this.$parent.backRoute = "/settings";
 			new MDCTextField(document.querySelector('#databox-name-field'));
 			new MDCTextField(document.querySelector('#password-field'));
-			new MDCTextField(document.querySelector('#password-confirm-field'));
 
-			this.$parent.setTitle("Databox Settings");
+			new MDCTextField(document.querySelector('#password-confirm-field'));
 			this.passwordDialog = new MDCDialog(document.querySelector('#password-dialog'));
 		},
 		methods: {

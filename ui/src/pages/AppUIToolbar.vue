@@ -31,7 +31,6 @@
 			}
 		},
 		mounted() {
-			this.$parent.setTitle(this.app, true);
 			this.appMenu = new MDCMenuSurface(document.querySelector('#app-menu'));
 		},
 		methods: {

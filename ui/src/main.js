@@ -1,6 +1,7 @@
 import App from './App.vue'
 import Vue from "./vueCore";
 import router from "./vueRouter"
+import './registerServiceWorker'
 
 Vue.mixin({
 	data: function() {

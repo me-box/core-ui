@@ -32,7 +32,8 @@
 			}
 		},
 		mounted() {
-			this.$parent.setTitle("Databox Dashboard", true);
+			this.$parent.title = 'Databox Dashboard';
+			this.$parent.backRoute = null;
 			this.loadData();
 			this.timerID = setInterval(() => {
 				this.loadData();

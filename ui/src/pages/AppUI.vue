@@ -27,11 +27,10 @@
 			}
 		},
 		mounted() {
-			//get app name from Query string
-			this.$parent.setTitle(this.app);
+			this.$parent.title = this.app;
+			this.$parent.backRoute = "/";
 		},
 	}
-
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

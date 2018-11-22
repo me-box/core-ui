@@ -40,7 +40,8 @@
 			}
 		},
 		mounted() {
-			this.$parent.setTitle("Databox Data");
+			this.$parent.title = "Databox Data";
+			this.$parent.backRoute = "/settings";
 			this.loadData();
 			this.timerID = setInterval(() => {
 				this.loadData();
