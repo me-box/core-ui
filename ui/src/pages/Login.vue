@@ -13,7 +13,8 @@
 				       autocomplete="username"
 				       :disabled="connecting"
 				       :autofocus="isMobile">
-				<label class="mdc-floating-label" for="url-field-input">Databox URL</label>
+				<label class="mdc-floating-label" :class="{ 'mdc-floating-label--float-above' : url }"
+				       for="url-field-input">Databox URL</label>
 				<div class="mdc-line-ripple"></div>
 			</div>
 			<div v-if="urlError" class="mdc-text-field-helper-text--persistent mdc-text-field-helper-text error"
@@ -55,12 +56,25 @@
 
 	export default {
 		name: 'logIn',
-		props: {},
+		props: {
+			url: {
+				default: function() {
+					return this.$parent.databoxUrl;
+				},
+				type: String
+			},
+			password: {
+				default: null,
+				type: String
+			},
+			autoLogin: {
+				default: false,
+				type: Boolean
+			}
+		},
 		components: {Spinner},
 		data() {
 			return {
-				password: "",
-				url: "",
 				passwordError: "",
 				urlError: "",
 				connecting: false
@@ -72,11 +86,12 @@
 			}
 		},
 		mounted() {
+			console.log("mounted2 " + this.url);
+			this.$parent.title = null;
+			this.$parent.backRoute = null;
+
 			new MDCTextField(document.querySelector('#url-field'));
 			new MDCTextField(document.querySelector('#password-field'));
-		},
-		created() {
-			this.url = this.$parent.databoxUrl;
 		},
 		methods: {
 			scan() {

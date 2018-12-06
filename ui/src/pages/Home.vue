@@ -28,7 +28,7 @@
 			return {
 				apps: [],
 				timerID: 0,
-				exclusions: ["core-ui", "app-store"]
+				exclusions: ["core-ui", "app-store", "driver-sensingkit"]
 			}
 		},
 		mounted() {
@@ -61,6 +61,15 @@
 							icon: "apps",
 							route: "/store"
 						});
+						if(this.isMobile) {
+							json.push({
+								name: "Sensing Kit",
+								type: "app",
+								state: "running",
+								icon: "phonelink_ring",
+								route: "/sensing"
+							});
+						}
 						json.sort((a, b) => {
 							return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
 						});

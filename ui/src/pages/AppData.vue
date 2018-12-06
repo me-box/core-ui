@@ -87,7 +87,6 @@
 		},
 		methods: {
 			deleteData() {
-				console.log('accepted');
 				this.deleteDialog.close();
 			},
 			onDecline() {

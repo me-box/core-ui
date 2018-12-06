@@ -1,6 +1,6 @@
 // vue.config.js
 module.exports = {
-	baseUrl: '/core-ui/ui/',
+	baseUrl: process.env.VUE_APP_BASE_URL,
 	css: {
 		loaderOptions: {
 			sass: {

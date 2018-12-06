@@ -55,9 +55,9 @@ func main() {
 
 	//HTTPS API
 	router.HandleFunc("/status", statusEndpoint).Methods("GET")
+	router.HandleFunc("/ui/api/connect", connect).Methods("GET")
 	router.HandleFunc("/ui/api/appStore", getApps(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/containerStatus", containerStatus(&cfg)).Methods("GET")
-	//router.HandleFunc("/ui/api/containerStatus2", containerStatus2(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/dataSources", dataSources(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/drivers/{name}", getDrivers(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/manifest/{name}", getManifest(&cfg)).Methods("GET")
@@ -99,13 +99,13 @@ func main() {
 }
 
 //func loggingMiddleware(next http.Handler) http.Handler {
-//	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-//		// Do stuff here
-//		fmt.Println(r.Method + " " + r.RequestURI)
-//		// Call the next handler, which can be another middleware in the chain, or the final handler.
-//		next.ServeHTTP(w, r)
-//	})
-//}
+////	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+////		// Do stuff here
+////		fmt.Println(r.Method + " " + r.RequestURI)
+////		// Call the next handler, which can be another middleware in the chain, or the final handler.
+////		next.ServeHTTP(w, r)
+////	})
+////}
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(r.URL.Path, "/ui/") {

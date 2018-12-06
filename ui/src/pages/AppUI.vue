@@ -7,7 +7,7 @@
 		props: ['app', 'path'],
 		computed: {
 			url() {
-				let url = '/' + this.app + '/ui';
+				let url = 'https://' + this.$parent.databoxUrl + '/' + this.app + '/ui';
 				if (this.path) {
 					url = url + '/' + this.path;
 				}

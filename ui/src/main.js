@@ -1,7 +1,8 @@
 import App from './App.vue'
 import Vue from "./vueCore";
-import router from "./vueRouter"
+import routes from "./routes"
 import './registerServiceWorker'
+import VueRouter from "vue-router";
 
 Vue.mixin({
 	data: function() {
@@ -19,6 +20,11 @@ window.addEventListener('message', (event) => {
 	}
 });
 
+const router = new VueRouter({
+	mode: 'history',
+	base: '/core-ui/ui/',
+	routes: routes
+});
 new Vue({
 	router,
 	render: h => h(App)

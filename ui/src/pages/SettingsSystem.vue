@@ -42,6 +42,8 @@
 		</aside>
 		<button class="mdc-button" @click="openPasswordDialog">Change Password</button>
 		<button class="mdc-button" @click="logout">Log Out</button>
+		
+		<div><img src="/core-ui/ui/api/qrcode.png"></div>
 	</div>
 </template>
 <script>

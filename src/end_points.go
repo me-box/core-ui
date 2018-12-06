@@ -16,6 +16,10 @@ func statusEndpoint(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("active\n"))
 }
 
+func connect(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("success\n"))
+}
+
 func qrcode(config *config) func(w http.ResponseWriter, r *http.Request) {
 	cfg := config
 

@@ -3,20 +3,9 @@
 <script>
 	export default {
 		name: 'scanQR',
-		props: {},
-		data: function () {
-			return {
-				password: "",
-				url: "",
-				error: ""
-			}
-		},
-		computed: {
-			valid: function () {
-				return this.url && this.password;
-			}
-		},
 		mounted: function () {
+			this.$parent.title = 'Scan QR Code';
+			this.$parent.backRoute = '/login';
 			QRScanner.prepare((err, status) => {
 				let body = document.getElementsByTagName("body")[0];
 				if (err) {
@@ -28,35 +17,25 @@
 				if (status.authorized) {
 					QRScanner.scan((err, text) => {
 						if (err) {
-							console.error(err);
+							console.error(JSON.stringify(err));
 						} else {
 							body.style.backgroundColor = '';
 							QRScanner.destroy();
 							const auth = JSON.parse(text);
-							this.$parent.login(auth.ip, auth.token);
+							this.$router.replace({ name: 'login', params: { url: auth.ip, password: auth.token, autoLogin: true }});
 						}
 					});
 
-					QRScanner.show(function(status){
-						console.log(status);
+					QRScanner.show(() => {
 						body.style.backgroundColor = 'transparent';
 					});
 				}
 			});
 		},
-		beforeDestroy: function() {
+		beforeDestroy: function () {
 			let body = document.getElementsByTagName("body")[0];
 			body.style.backgroundColor = '';
 			QRScanner.destroy();
-		},
-		methods: {
-			scan: function () {
-				console.log("Scan Test 1");
-				this.$parent.scan();
-			},
-			login: function () {
-				this.$parent.login(this.url, this.password);
-			}
 		}
 	}
 </script>

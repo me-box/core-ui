@@ -4,23 +4,26 @@
 	"private": true,
 	"scripts": {
 		"build": "vue-cli-service build --modern",
-		"build.app": "vue-cli-service build --dest '../../databox-app/www' 'src/app.js'"
+		"watch": "vue-cli-service build --modern --watch",
+		"build.app": "vue-cli-service build --mode mobile --dest '../../databox-app/www' 'src/app.js'",
+		"watch.app": "vue-cli-service build --watch --mode mobile --dest '../../databox-app/www' 'src/app.js'",
+		"run.android": "vue-cli-service build --mode mobile --dest '../../databox-app/www' 'src/app.js' && cd ../../databox-app && cordova run android"
 	},
 	"dependencies": {
-		"material-components-web": "^0.41.1",
+		"material-components-web": "^0.42.0",
 		"node-sass": "^4.10.0",
 		"npm": "^6.4.1",
 		"register-service-worker": "^1.5.2",
 		"sass-loader": "^7.1.0",
 		"vue": "^2.5.17",
 		"vue-async-computed": "^3.5.0",
-		"vue-router": "^3.0.1"
+		"vue-router": "^3.0.2"
 	},
 	"devDependencies": {
-		"@vue/cli-plugin-babel": "^3.1.1",
-		"@vue/cli-plugin-eslint": "^3.1.5",
-		"@vue/cli-plugin-pwa": "^3.1.2",
-		"@vue/cli-service": "^3.1.4",
+		"@vue/cli-plugin-babel": "^3.2.0",
+		"@vue/cli-plugin-eslint": "^3.2.1",
+		"@vue/cli-plugin-pwa": "^3.2.0",
+		"@vue/cli-service": "^3.2.0",
 		"vue-template-compiler": "^2.5.17"
 	},
 	"eslintConfig": {
