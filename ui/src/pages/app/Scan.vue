@@ -22,7 +22,8 @@
 							body.style.backgroundColor = '';
 							QRScanner.destroy();
 							const auth = JSON.parse(text);
-							this.$router.replace({ name: 'login', params: { url: auth.ip, password: auth.token, autoLogin: true }});
+							let token = auth.token.replace(/^(Token=\.)/,"");
+							this.$router.replace({ name: 'login', params: { url: auth.ip, password: token, autoLogin: true }});
 						}
 					});
 

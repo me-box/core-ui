@@ -72,7 +72,9 @@
 					this.authenticated = true;
 					this.$router.replace("/");
 				})
-				.catch(() => {
+				.catch((error) => {
+					console.log("Connect Failed");
+					console.log(error);
 					this.connecting = false;
 					this.authenticated = false;
 					this.$router.replace("/login");
@@ -95,7 +97,7 @@
 			}
 		},
 		methods: {
-			request: function (url, opts = {}) {
+			request(url, opts = {}) {
 				opts.credentials = 'include';
 				opts.mode = 'cors';
 				return fetch('https://' + this.databoxUrl + url, opts)
@@ -117,7 +119,7 @@
 						}
 					});
 			},
-			apiRequest: function (url, cannedData, opts = {}) {
+			apiRequest(url, cannedData, opts = {}) {
 				opts.credentials = 'include';
 				opts.mode = 'cors';
 				return this.request(url, opts)
@@ -167,6 +169,7 @@
 			},
 			login(url, password) {
 				this.databoxUrl = url;
+				localStorage.setItem(DATABOX_URL, url);
 				return this.request('/core-ui/ui/api/connect', {
 					method: "GET",
 					credentials: "include",
@@ -177,7 +180,6 @@
 				})
 					.then(() => {
 						this.authenticated = true;
-						localStorage.setItem(DATABOX_URL, url);
 						this.$router.replace("/")
 					})
 					.catch((error) => {

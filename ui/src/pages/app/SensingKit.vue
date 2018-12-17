@@ -107,11 +107,14 @@
 						this.enabledSensors.push(name);
 					}
 				} else {
-					this.enabledSensors = this.enabledSensors.filter((ele) => {
-						return ele !== name;
-					});
+					for (let i = 0; i < this.enabledSensors.length; i++) {
+						if (this.enabledSensors[i] === name) {
+							this.enabledSensors.splice(i, 1);
+						}
+					}
 				}
 				const url = 'https://' + this.$parent.databoxUrl + '/driver-sensingkit';
+				console.log(this.enabledSensors);
 				window.SensingKit.startSensors(this.enabledSensors, url, () => {});
 			},
 			installSensingKit() {
