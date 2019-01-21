@@ -38,7 +38,7 @@
 				{{ passwordError }}
 			</div>
 
-			<div v-if="connecting" style="display: flex; justify-content: center; padding: 8px">
+			<div v-if="connecting" style="display: flex; justify-content: center; padding: 16px">
 				<Spinner/>
 			</div>
 			<div v-else style="display: flex">
@@ -58,10 +58,14 @@
 		name: 'logIn',
 		props: {
 			url: {
-				default: function() {
+				default: function () {
 					return this.$parent.databoxUrl;
 				},
 				type: String
+			},
+			ipList: {
+				default: [],
+				type: Array
 			},
 			password: {
 				default: null,
@@ -91,6 +95,10 @@
 
 			new MDCTextField(document.querySelector('#url-field'));
 			new MDCTextField(document.querySelector('#password-field'));
+
+			if (this.autoLogin) {
+				this.loginList();
+			}
 		},
 		methods: {
 			scan() {
@@ -98,9 +106,24 @@
 					this.$router.push('/scan');
 				}
 			},
+			async loginList() {
+				this.connecting = true;
+				for (const ip of this.ipList) {
+					try {
+						this.url = ip;
+						await this.$parent.login(ip, this.password);
+						return;
+					} catch (error) {
+						console.log(error);
+					}
+				}
+				this.connecting = false;
+				this.urlError = "";
+				this.passwordError = "Login Failed.";
+			},
 			login() {
 				this.connecting = true;
-				this.$parent.login(this.url, this.password)
+				return this.$parent.login(this.url, this.password)
 					.catch((error) => {
 						console.log(error);
 						this.connecting = false;

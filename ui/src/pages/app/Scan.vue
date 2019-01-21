@@ -22,20 +22,16 @@
 							body.style.backgroundColor = '';
 							QRScanner.destroy();
 							const auth = JSON.parse(text);
-							let boxIP = auth.ip;
-							if (boxIP === "127.0.0.1" || ip.startsWith("169.254.")) {
-								for (const ip of auth.ips) {
-									if (ip === "127.0.0.1" || ip.startsWith("169.254.")) {
-										continue;
-									}
-									boxIP = ip;
-									break;
+							let ipList = [auth.ipExternal];
+							for (const ip of auth.ips) {
+								if (ip !== "127.0.0.1" && !ip.startsWith("169.254.")) {
+									ipList.push(ip);
 								}
 							}
 							let token = auth.token.trim().replace(/^(Token=)/, "");
 							this.$router.replace({
 								name: 'login',
-								params: {url: boxIP, password: token, autoLogin: true}
+								params: {ipList: ipList, password: token, autoLogin: true}
 							});
 						}
 					});
