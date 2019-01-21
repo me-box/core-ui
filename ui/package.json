@@ -10,21 +10,21 @@
 		"run.android": "vue-cli-service build --mode mobile --dest '../../databox-app/www' 'src/app.js' && cd ../../databox-app && cordova run android"
 	},
 	"dependencies": {
-		"material-components-web": "^0.42.0",
-		"node-sass": "^4.10.0",
-		"npm": "^6.4.1",
+		"material-components-web": "^0.43.0",
+		"node-sass": "^4.11.0",
+		"npm": "^6.5.0",
 		"register-service-worker": "^1.5.2",
 		"sass-loader": "^7.1.0",
-		"vue": "^2.5.17",
-		"vue-async-computed": "^3.5.0",
+		"vue": "^2.5.22",
+		"vue-async-computed": "^3.5.1",
 		"vue-router": "^3.0.2"
 	},
 	"devDependencies": {
-		"@vue/cli-plugin-babel": "^3.2.0",
-		"@vue/cli-plugin-eslint": "^3.2.1",
-		"@vue/cli-plugin-pwa": "^3.2.0",
-		"@vue/cli-service": "^3.2.0",
-		"vue-template-compiler": "^2.5.17"
+		"@vue/cli-plugin-babel": "^3.3.0",
+		"@vue/cli-plugin-eslint": "^3.3.0",
+		"@vue/cli-plugin-pwa": "^3.3.0",
+		"@vue/cli-service": "^3.3.0",
+		"vue-template-compiler": "^2.5.22"
 	},
 	"eslintConfig": {
 		"root": true,

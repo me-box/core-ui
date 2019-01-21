@@ -42,6 +42,7 @@
 <script>
 	import {MDCMenuSurface} from '@material/menu-surface';
 	import Spinner from "./components/Spinner";
+	import testdata from './testData/status.json'
 
 	const DATABOX_URL = "databoxURL";
 
@@ -70,7 +71,7 @@
 				.then(() => {
 					this.connecting = false;
 					this.authenticated = true;
-					this.$router.replace("/");
+					//this.$router.replace("/");
 				})
 				.catch((error) => {
 					console.log("Connect Failed");
@@ -89,7 +90,7 @@
 		},
 		watch: {
 			title(val) {
-				if(val) {
+				if (val) {
 					document.title = val
 				} else {
 					document.title = "Databox Dashboard"
@@ -110,7 +111,7 @@
 					})
 					.catch((err) => {
 						this.connecting = false;
-						if (err.status === 401 || err.status === 404) {
+						if (err.status === 401) {
 							this.authenticated = false;
 							this.$router.replace("/login");
 							throw err;
@@ -134,8 +135,8 @@
 						}
 					});
 			},
-			installAndWait(manifest) {
-				return this.apiRequest('/core-ui/ui/api/install', {}, {
+			async installAndWait(manifest) {
+				await this.apiRequest('/core-ui/ui/api/install', {}, {
 					method: 'POST',
 					headers: {
 						'Accept': 'application/json, text/plain, */*',
@@ -144,24 +145,21 @@
 					body: JSON.stringify({
 						manifest: manifest,
 					}),
-				})
-					.then(this.waitForInstall(manifest.name))
-			},
-			waitForInstall(appName) {
-				return new Promise(function (resolve) {
-					(function checkInstall() {
-						this.apiRequest('/core-ui/ui/api/containerStatus', testdata)
-							.then(json => {
-								for (const app of json) {
-									if (app.name === appName) {
-										resolve();
-										break;
-									}
-								}
-								setTimeout(checkInstall, 1000);
-							});
-					})();
 				});
+				await this.waitForInstall(manifest.name);
+			},
+			async waitForInstall(appName) {
+				while (true) {
+					let json = await this.apiRequest('/core-ui/ui/api/containerStatus', testdata);
+					for (const app of json) {
+						if (app.name === appName) {
+							return;
+						}
+					}
+					await new Promise((resolve) => {
+						setTimeout(() => resolve(), 2000)
+					});
+				}
 			},
 			logout() {
 				this.authenticated = false;
@@ -217,6 +215,7 @@
 	@import "~@material/menu-surface/mdc-menu-surface";
 	@import "~@material/select/mdc-select";
 	@import "~@material/textfield/mdc-text-field";
+	@import "~@material/typography/mdc-typography";
 	@import "~@material/theme/mdc-theme";
 	@import "~@material/top-app-bar/mdc-top-app-bar";
 

@@ -1,12 +1,15 @@
 <template>
-	<div style="max-width: 100%; padding: 16px; display: flex">
-		<div v-if="installed == null || loading">
+	<div id="sensorKit">
+		<template v-if="installed == null || loading">
 			<Spinner/>
-		</div>
-		<div v-else-if="installed === false">
-			<button @click="installSensingKit">Install</button>
-		</div>
+		</template>
+		<template v-else-if="installed === false">
+			<div class="material-icons mdc-theme--primary" style="font-size: 64px; align-self: center">phonelink_ring</div>
+			<div style="width: 200px; margin: 16px; align-self: center">The Sensor Kit allows you to capture data from your mobile and send it securely to your Databox</div>
+			<button class="mdc-button mdc-button--unelevated" style="align-self: center" @click="installSensingKit">Install</button>
+		</template>
 		<div v-else class="mdc-list mdc-list--avatar-list">
+			<div style="padding: 0 16px 16px 16px;">The Sensor Kit allows you to capture data from your mobile and send it securely to your Databox</div>
 			<label :for="sensorId(sensor)" v-for="sensor in sensors" :key="sensor" class="mdc-list-item" role="checkbox"
 			       :aria-checked="isEnabled(sensor)">
 				{{ sensor }}
@@ -133,6 +136,12 @@
 </script>
 <style lang="scss">
 	@import "~@material/checkbox/mdc-checkbox";
+	#sensorKit {
+		display: flex;
+		flex-direction: column;
+		margin: 24px;
+		max-width: 100%;
+	}
 
 	.disabled {
 		color: #999;

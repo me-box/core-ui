@@ -177,27 +177,25 @@
 					this.installingDriver = driver.name;
 					this.$parent.installAndWait(driver)
 						.then(this.checkDriverReady(driver.name))
-						.then((datasources)=> {
+						.then((datasources) => {
 							this.drivers = null;
 							this.dataSources = datasources;
 							this.installingDriver = null;
 						})
 				}
 			},
-			checkDriverReady(driver) {
-				return new Promise(function (resolve, reject) {
-					(function checkReady() {
-						this.$parent.apiRequest('/core-ui/ui/api/dataSources', testdata)
-							.then((datasources) => {
-								for (const datasource of datasources) {
-									if (datasource.href.includes(driver)) {
-										resolve(datasources);
-										break;
-									}
-								}
-							});
-					})();
-				});
+			async checkDriverReady(driver) {
+				while (true) {
+					let datasources = await this.$parent.apiRequest('/core-ui/ui/api/dataSources', testdata);
+					for (const datasource of datasources) {
+						if (datasource.href.includes(driver)) {
+							return datasources;
+						}
+					}
+					await new Promise((resolve) => {
+						setTimeout(() => resolve(), 2000)
+					});
+				}
 			},
 			checkDatasource(datasource) {
 				const getValFromHypercat = (hypercat, match) => {

@@ -1,4 +1,5 @@
 <template>
+	<!-- sandbox="allow-same-origin allow-scripts allow-popups allow-forms" -->
 	<iframe :src="url"></iframe>
 </template>
 <script>
@@ -13,15 +14,8 @@
 				}
 
 				let search = window.location.search;
-				if (search === '') {
-					if (this.isMobile) {
-						url = url + '?mobile=true';
-					}
-				} else {
-					url = url + window.location.search;
-					if (this.isMobile) {
-						url = url + '&mobile=true';
-					}
+				if (search !== '') {
+					url = url + search;
 				}
 				return url;
 			}

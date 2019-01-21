@@ -13,12 +13,17 @@ Vue.mixin({
 	},
 });
 
-//Add in the event listener to redirect oauth requests
-window.addEventListener('message', (event) => {
-	if (event.data.type === 'databox_oauth_redirect') {
-		window.location.href = event.data.url;
+window.getOauthCallbackURL = () => {
+	const databoxUrl = localStorage.getItem("databoxURL");
+	if(window.location.pathname.startsWith('/core-ui/ui/view/')) {
+		const appname = window.location.pathname.split('/')[4];
+		return 'https://' + databoxUrl + '/core-ui/ui/view/' + appname + '/oauth';
 	}
-});
+	return 'https://' + databoxUrl + '/ui/oauth';
+};
+window.startOauth = (url) => {
+	window.location.href = url;
+};
 
 const router = new VueRouter({
 	mode: 'history',

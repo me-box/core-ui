@@ -86,7 +86,6 @@
 			}
 		},
 		mounted() {
-			console.log("mounted2 " + this.url);
 			this.$parent.title = null;
 			this.$parent.backRoute = null;
 

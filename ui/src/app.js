@@ -49,31 +49,35 @@ new Vue({
 	}
 }).$mount('#app');
 
-window.addEventListener('message', (event) => {
-	if (event.data.type === 'databox_oauth_redirect') {
-		toolbar.showSpinner();
-		SafariViewController.isAvailable((available) => {
-			let url = event.data.url.replace('{callback}', 'databox://oauth');
-			if (available) {
-				SafariViewController.show({
-						url: url,
-						hidden: false,
-						animated: false,
-						enterReaderModeIfAvailable: false,
-						tintColor: "#3f51b5",
-					},
-					(result) => {
-						if (result.event === 'opened') {
-						} else if (result.event === 'loaded') {
-						} else if (result.event === 'closed') {
-						}
-					},
-					(msg) => {
-						console.log("KO: " + msg);
-					})
-			} else {
-				window.open(url, '_blank', 'location=yes');
-			}
-		})
+window.getOauthCallbackURL = () => {
+	if(window.location.pathname.startsWith('/core-ui/ui/view/')) {
+		const appname = window.location.pathname.split('/')[4];
+		return 'databox://' + appname + '/oauth';
 	}
-});
+	return 'databox://oauth';
+};
+window.startOauth = function(url) {
+	toolbar.showSpinner();
+	SafariViewController.isAvailable((available) => {
+		if (available) {
+			SafariViewController.show({
+					url: url,
+					hidden: false,
+					animated: false,
+					enterReaderModeIfAvailable: false,
+					tintColor: "#3f51b5",
+				},
+				(result) => {
+					if (result.event === 'opened') {
+					} else if (result.event === 'loaded') {
+					} else if (result.event === 'closed') {
+					}
+				},
+				(msg) => {
+					console.log("KO: " + msg);
+				})
+		} else {
+			window.open(url, '_blank', 'location=yes');
+		}
+	})
+};

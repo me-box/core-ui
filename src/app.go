@@ -68,6 +68,7 @@ func main() {
 	router.HandleFunc("/ui/cert.pem", certPub(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/cert.der", certPubDer(&cfg)).Methods("GET")
 	router.PathPrefix("/ui/{type:css|icons|js}/").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir("./www")))).Methods("GET")
+	router.PathPrefix("/ui/{type:manifest.json|cordova.js|service-worker.js|precache-manifest.|robots.txt}").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir("./www")))).Methods("GET")
 	router.PathPrefix("/ui/").Handler(http.HandlerFunc(serveIndex)).Methods("GET")
 
 	//router.Use(loggingMiddleware)
