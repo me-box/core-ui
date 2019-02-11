@@ -1,4 +1,4 @@
-FROM golang:alpine as gobuild
+FROM golang:1.11.5-alpine3.8 as gobuild
 WORKDIR /
 ENV GOPATH="/go"
 RUN apk update && apk add build-base git zeromq-dev
@@ -12,7 +12,7 @@ COPY ./src ./src
 RUN addgroup -S databox && adduser -S -g databox databox
 RUN GGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s -w' -o app /src/*.go
 
-FROM amd64/alpine
+FROM amd64/alpine:3.8
 COPY --from=gobuild /etc/passwd /etc/passwd
 RUN apk update && apk add libzmq
 USER databox
