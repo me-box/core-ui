@@ -1,19 +1,24 @@
-FROM amd64/alpine:3.8 as build
-RUN echo http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
-RUN apk update && apk add build-base go git libzmq zeromq-dev alpine-sdk libsodium-dev
-RUN apk add 'go>=1.11-r0' --update-cache --repository http://nl.alpinelinux.org/alpine/edge/community
+FROM golang:1.11.5-alpine3.8 as gobuild
+WORKDIR /
+ENV GOPATH="/go"
+RUN apk update && apk add build-base git zeromq-dev
+#COPY . . if you update the libs below build with --no-cache
 
-COPY . .
+RUN go get -d github.com/gorilla/mux
+RUN go get -d github.com/me-box/lib-go-databox
+#RUN go get -d github.com/gorilla/handlers
+
+COPY ./src ./src
 RUN addgroup -S databox && adduser -S -g databox databox
 RUN GGO_ENABLED=0 GOOS=linux go build -a -ldflags '-s -w' -o app /src/*.go
 
 FROM amd64/alpine:3.8
-COPY --from=build /etc/passwd /etc/passwd
+COPY --from=gobuild /etc/passwd /etc/passwd
 RUN apk update && apk add libzmq
 USER databox
 WORKDIR /
-COPY --from=build /app .
-COPY --from=build /ui/dist /www
+COPY --from=gobuild /app .
+COPY /ui/dist /www
 LABEL databox.type="app"
 EXPOSE 8080
 CMD ["./app"]

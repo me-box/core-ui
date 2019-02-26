@@ -1,5 +1,5 @@
 IMAGE_NAME=core-ui
-DEFAULT_REG=toshbrown
+DEFAULT_REG=databoxsystems
 VERSION=latest
 
 .PHONY: all

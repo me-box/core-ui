@@ -1,1 +1,411 @@
-[{"item-metadata":[{"rel":"urn:X-hypercat:rels:hasDescription:en","val":"Databox container manager data API"},{"rel":"urn:X-hypercat:rels:isContentType","val":"application/json"},{"rel":"urn:X-databox:rels:hasVendor","val":"Databox"},{"rel":"urn:X-databox:rels:hasType","val":"databox:container-manager:data"},{"rel":"urn:X-databox:rels:hasDatasourceid","val":"data"},{"rel":"urn:X-databox:rels:hasStoreType","val":"kv"},{"rel":"urn:X-databox:rels:isActuator","val":true}],"href":"tcp://container-manager-core-store:5555/kv/data"},{"item-metadata":[{"rel":"urn:X-hypercat:rels:hasDescription:en","val":"Databox container manager API"},{"rel":"urn:X-hypercat:rels:isContentType","val":"application/json"},{"rel":"urn:X-databox:rels:hasVendor","val":"Databox"},{"rel":"urn:X-databox:rels:hasType","val":"databox:container-manager:api"},{"rel":"urn:X-databox:rels:hasDatasourceid","val":"api"},{"rel":"urn:X-databox:rels:hasStoreType","val":"kv"},{"rel":"urn:X-databox:rels:isActuator","val":true}],"href":"tcp://container-manager-core-store:5555/kv/api"},{"item-metadata":[{"rel":"urn:X-hypercat:rels:hasDescription:en","val":"Persistant SLA storage"},{"rel":"urn:X-hypercat:rels:isContentType","val":"json"},{"rel":"urn:X-databox:rels:hasVendor","val":"databox"},{"rel":"urn:X-databox:rels:hasType","val":"databox:container-manager:SLA"},{"rel":"urn:X-databox:rels:hasDatasourceid","val":"slaStore"},{"rel":"urn:X-databox:rels:hasStoreType","val":"kv"}],"href":"tcp://container-manager-core-store:5555/kv/slaStore"},{"item-metadata":[{"rel":"urn:X-hypercat:rels:hasDescription:en","val":"container manager logs"},{"rel":"urn:X-hypercat:rels:isContentType","val":"aplication/json"},{"rel":"urn:X-databox:rels:hasVendor","val":"databox"},{"rel":"urn:X-databox:rels:hasType","val":"databox-logs"},{"rel":"urn:X-databox:rels:hasDatasourceid","val":"cmlogs"},{"rel":"urn:X-databox:rels:hasStoreType","val":"tsblob"}],"href":"tcp://container-manager-core-store:5555/tsblob/cmlogs"},{"item-metadata":[{"rel":"urn:X-hypercat:rels:hasDescription:en","val":"Databox manifests"},{"rel":"urn:X-hypercat:rels:isContentType","val":"application/json"},{"rel":"urn:X-databox:rels:hasVendor","val":"Databox"},{"rel":"urn:X-databox:rels:hasType","val":"databox:manifests:all"},{"rel":"urn:X-databox:rels:hasDatasourceid","val":"all"},{"rel":"urn:X-databox:rels:hasStoreType","val":"kv"}],"href":"tcp://core-app-store-core-store:5555/kv/all"},{"item-metadata":[{"rel":"urn:X-hypercat:rels:hasDescription:en","val":"Databox driver manifests"},{"rel":"urn:X-hypercat:rels:isContentType","val":"application/json"},{"rel":"urn:X-databox:rels:hasVendor","val":"Databox"},{"rel":"urn:X-databox:rels:hasType","val":"databox:manifests:driver"},{"rel":"urn:X-databox:rels:hasDatasourceid","val":"drivers"},{"rel":"urn:X-databox:rels:hasStoreType","val":"kv"}],"href":"tcp://core-app-store-core-store:5555/kv/drivers"},{"item-metadata":[{"rel":"urn:X-hypercat:rels:hasDescription:en","val":"Databox app manifests"},{"rel":"urn:X-hypercat:rels:isContentType","val":"application/json"},{"rel":"urn:X-databox:rels:hasVendor","val":"Databox"},{"rel":"urn:X-databox:rels:hasType","val":"databox:manifests:app"},{"rel":"urn:X-databox:rels:hasDatasourceid","val":"apps"},{"rel":"urn:X-databox:rels:hasStoreType","val":"kv"}],"href":"tcp://core-app-store-core-store:5555/kv/apps"},{"item-metadata":[{"rel":"urn:X-hypercat:rels:hasDescription:en","val":"Databox free memory in bytes structured"},{"rel":"urn:X-hypercat:rels:isContentType","val":"application/json"},{"rel":"urn:X-databox:rels:hasVendor","val":"Databox Inc."},{"rel":"urn:X-databox:rels:hasType","val":"freememStructured"},{"rel":"urn:X-databox:rels:hasDatasourceid","val":"freememStructured"},{"rel":"urn:X-databox:rels:hasStoreType","val":"ts"},{"rel":"urn:X-databox:rels:hasUnit","val":"bytes"}],"href":"tcp://driver-os-monitor-core-store:5555/ts/freememStructured"},{"item-metadata":[{"rel":"urn:X-hypercat:rels:hasDescription:en","val":"Databox load average 1 minute structured"},{"rel":"urn:X-hypercat:rels:isContentType","val":"application/json"},{"rel":"urn:X-databox:rels:hasVendor","val":"Databox Inc."},{"rel":"urn:X-databox:rels:hasType","val":"loadavg1Structured"},{"rel":"urn:X-databox:rels:hasDatasourceid","val":"loadavg1Structured"},{"rel":"urn:X-databox:rels:hasStoreType","val":"ts"},{"rel":"urn:X-databox:rels:hasUnit","val":"%"}],"href":"tcp://driver-os-monitor-core-store:5555/ts/loadavg1Structured"},{"item-metadata":[{"rel":"urn:X-hypercat:rels:hasDescription:en","val":"Databox free memory in bytes"},{"rel":"urn:X-hypercat:rels:isContentType","val":"application/json"},{"rel":"urn:X-databox:rels:hasVendor","val":"Databox Inc."},{"rel":"urn:X-databox:rels:hasType","val":"freemem"},{"rel":"urn:X-databox:rels:hasDatasourceid","val":"freemem"},{"rel":"urn:X-databox:rels:hasStoreType","val":"ts"},{"rel":"urn:X-databox:rels:hasUnit","val":"bytes"}],"href":"tcp://driver-os-monitor-core-store:5555/ts/blob/freemem"},{"item-metadata":[{"rel":"urn:X-hypercat:rels:hasDescription:en","val":"Databox load average over 15 minutes"},{"rel":"urn:X-hypercat:rels:isContentType","val":"application/json"},{"rel":"urn:X-databox:rels:hasVendor","val":"Databox Inc."},{"rel":"urn:X-databox:rels:hasType","val":"loadavg15"},{"rel":"urn:X-databox:rels:hasDatasourceid","val":"loadavg15"},{"rel":"urn:X-databox:rels:hasStoreType","val":"ts"},{"rel":"urn:X-databox:rels:hasUnit","val":"%"}],"href":"tcp://driver-os-monitor-core-store:5555/ts/blob/loadavg15"},{"item-metadata":[{"rel":"urn:X-hypercat:rels:hasDescription:en","val":"Databox load average over 5 minutes"},{"rel":"urn:X-hypercat:rels:isContentType","val":"application/json"},{"rel":"urn:X-databox:rels:hasVendor","val":"Databox Inc."},{"rel":"urn:X-databox:rels:hasType","val":"loadavg5"},{"rel":"urn:X-databox:rels:hasDatasourceid","val":"loadavg5"},{"rel":"urn:X-databox:rels:hasStoreType","val":"ts"},{"rel":"urn:X-databox:rels:hasUnit","val":"%"}],"href":"tcp://driver-os-monitor-core-store:5555/ts/blob/loadavg5"},{"item-metadata":[{"rel":"urn:X-hypercat:rels:hasDescription:en","val":"Databox load average 1 minute"},{"rel":"urn:X-hypercat:rels:isContentType","val":"application/json"},{"rel":"urn:X-databox:rels:hasVendor","val":"Databox Inc."},{"rel":"urn:X-databox:rels:hasType","val":"loadavg1"},{"rel":"urn:X-databox:rels:hasDatasourceid","val":"loadavg1"},{"rel":"urn:X-databox:rels:hasStoreType","val":"ts"},{"rel":"urn:X-databox:rels:hasUnit","val":"%"}],"href":"tcp://driver-os-monitor-core-store:5555/ts/blob/loadavg1"}]
+[
+	{
+		"item-metadata": [
+			{
+				"rel": "urn:X-hypercat:rels:hasDescription:en",
+				"val": "Databox container manager data API"
+			},
+			{
+				"rel": "urn:X-hypercat:rels:isContentType",
+				"val": "application/json"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasVendor",
+				"val": "Databox"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasType",
+				"val": "databox:container-manager:data"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasDatasourceid",
+				"val": "data"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasStoreType",
+				"val": "kv"
+			},
+			{
+				"rel": "urn:X-databox:rels:isActuator",
+				"val": true
+			}
+		],
+		"href": "tcp://container-manager-core-store:5555/kv/data"
+	},
+	{
+		"item-metadata": [
+			{
+				"rel": "urn:X-hypercat:rels:hasDescription:en",
+				"val": "Databox container manager API"
+			},
+			{
+				"rel": "urn:X-hypercat:rels:isContentType",
+				"val": "application/json"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasVendor",
+				"val": "Databox"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasType",
+				"val": "databox:container-manager:api"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasDatasourceid",
+				"val": "api"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasStoreType",
+				"val": "kv"
+			},
+			{
+				"rel": "urn:X-databox:rels:isActuator",
+				"val": true
+			}
+		],
+		"href": "tcp://container-manager-core-store:5555/kv/api"
+	},
+	{
+		"item-metadata": [
+			{
+				"rel": "urn:X-hypercat:rels:hasDescription:en",
+				"val": "Persistant SLA storage"
+			},
+			{
+				"rel": "urn:X-hypercat:rels:isContentType",
+				"val": "json"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasVendor",
+				"val": "databox"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasType",
+				"val": "databox:container-manager:SLA"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasDatasourceid",
+				"val": "slaStore"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasStoreType",
+				"val": "kv"
+			}
+		],
+		"href": "tcp://container-manager-core-store:5555/kv/slaStore"
+	},
+	{
+		"item-metadata": [
+			{
+				"rel": "urn:X-hypercat:rels:hasDescription:en",
+				"val": "container manager logs"
+			},
+			{
+				"rel": "urn:X-hypercat:rels:isContentType",
+				"val": "aplication/json"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasVendor",
+				"val": "databox"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasType",
+				"val": "databox-logs"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasDatasourceid",
+				"val": "cmlogs"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasStoreType",
+				"val": "tsblob"
+			}
+		],
+		"href": "tcp://container-manager-core-store:5555/tsblob/cmlogs"
+	},
+	{
+		"item-metadata": [
+			{
+				"rel": "urn:X-hypercat:rels:hasDescription:en",
+				"val": "Databox manifests"
+			},
+			{
+				"rel": "urn:X-hypercat:rels:isContentType",
+				"val": "application/json"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasVendor",
+				"val": "Databox"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasType",
+				"val": "databox:manifests:all"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasDatasourceid",
+				"val": "all"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasStoreType",
+				"val": "kv"
+			}
+		],
+		"href": "tcp://core-app-store-core-store:5555/kv/all"
+	},
+	{
+		"item-metadata": [
+			{
+				"rel": "urn:X-hypercat:rels:hasDescription:en",
+				"val": "Databox driver manifests"
+			},
+			{
+				"rel": "urn:X-hypercat:rels:isContentType",
+				"val": "application/json"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasVendor",
+				"val": "Databox"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasType",
+				"val": "databox:manifests:driver"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasDatasourceid",
+				"val": "drivers"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasStoreType",
+				"val": "kv"
+			}
+		],
+		"href": "tcp://core-app-store-core-store:5555/kv/drivers"
+	},
+	{
+		"item-metadata": [
+			{
+				"rel": "urn:X-hypercat:rels:hasDescription:en",
+				"val": "Databox app manifests"
+			},
+			{
+				"rel": "urn:X-hypercat:rels:isContentType",
+				"val": "application/json"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasVendor",
+				"val": "Databox"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasType",
+				"val": "databox:manifests:app"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasDatasourceid",
+				"val": "apps"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasStoreType",
+				"val": "kv"
+			}
+		],
+		"href": "tcp://core-app-store-core-store:5555/kv/apps"
+	},
+	{
+		"item-metadata": [
+			{
+				"rel": "urn:X-hypercat:rels:hasDescription:en",
+				"val": "Databox free memory in bytes structured"
+			},
+			{
+				"rel": "urn:X-hypercat:rels:isContentType",
+				"val": "application/json"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasVendor",
+				"val": "Databox Inc."
+			},
+			{
+				"rel": "urn:X-databox:rels:hasType",
+				"val": "freememStructured"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasDatasourceid",
+				"val": "freememStructured"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasStoreType",
+				"val": "ts"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasUnit",
+				"val": "bytes"
+			}
+		],
+		"href": "tcp://driver-os-monitor-core-store:5555/ts/freememStructured"
+	},
+	{
+		"item-metadata": [
+			{
+				"rel": "urn:X-hypercat:rels:hasDescription:en",
+				"val": "Databox load average 1 minute structured"
+			},
+			{
+				"rel": "urn:X-hypercat:rels:isContentType",
+				"val": "application/json"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasVendor",
+				"val": "Databox Inc."
+			},
+			{
+				"rel": "urn:X-databox:rels:hasType",
+				"val": "loadavg1Structured"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasDatasourceid",
+				"val": "loadavg1Structured"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasStoreType",
+				"val": "ts"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasUnit",
+				"val": "%"
+			}
+		],
+		"href": "tcp://driver-os-monitor-core-store:5555/ts/loadavg1Structured"
+	},
+	{
+		"item-metadata": [
+			{
+				"rel": "urn:X-hypercat:rels:hasDescription:en",
+				"val": "Databox free memory in bytes"
+			},
+			{
+				"rel": "urn:X-hypercat:rels:isContentType",
+				"val": "application/json"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasVendor",
+				"val": "Databox Inc."
+			},
+			{
+				"rel": "urn:X-databox:rels:hasType",
+				"val": "freemem"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasDatasourceid",
+				"val": "freemem"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasStoreType",
+				"val": "ts"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasUnit",
+				"val": "bytes"
+			}
+		],
+		"href": "tcp://driver-os-monitor-core-store:5555/ts/blob/freemem"
+	},
+	{
+		"item-metadata": [
+			{
+				"rel": "urn:X-hypercat:rels:hasDescription:en",
+				"val": "Databox load average over 15 minutes"
+			},
+			{
+				"rel": "urn:X-hypercat:rels:isContentType",
+				"val": "application/json"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasVendor",
+				"val": "Databox Inc."
+			},
+			{
+				"rel": "urn:X-databox:rels:hasType",
+				"val": "loadavg15"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasDatasourceid",
+				"val": "loadavg15"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasStoreType",
+				"val": "ts"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasUnit",
+				"val": "%"
+			}
+		],
+		"href": "tcp://driver-os-monitor-core-store:5555/ts/blob/loadavg15"
+	},
+	{
+		"item-metadata": [
+			{
+				"rel": "urn:X-hypercat:rels:hasDescription:en",
+				"val": "Databox load average over 5 minutes"
+			},
+			{
+				"rel": "urn:X-hypercat:rels:isContentType",
+				"val": "application/json"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasVendor",
+				"val": "Databox Inc."
+			},
+			{
+				"rel": "urn:X-databox:rels:hasType",
+				"val": "loadavg5"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasDatasourceid",
+				"val": "loadavg5"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasStoreType",
+				"val": "ts"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasUnit",
+				"val": "%"
+			}
+		],
+		"href": "tcp://driver-os-monitor-core-store:5555/ts/blob/loadavg5"
+	},
+	{
+		"item-metadata": [
+			{
+				"rel": "urn:X-hypercat:rels:hasDescription:en",
+				"val": "Databox load average 1 minute"
+			},
+			{
+				"rel": "urn:X-hypercat:rels:isContentType",
+				"val": "application/json"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasVendor",
+				"val": "Databox Inc."
+			},
+			{
+				"rel": "urn:X-databox:rels:hasType",
+				"val": "loadavg1"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasDatasourceid",
+				"val": "loadavg1"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasStoreType",
+				"val": "ts"
+			},
+			{
+				"rel": "urn:X-databox:rels:hasUnit",
+				"val": "%"
+			}
+		],
+		"href": "tcp://driver-os-monitor-core-store:5555/ts/blob/loadavg1"
+	}
+]

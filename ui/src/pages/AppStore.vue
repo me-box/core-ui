@@ -1,86 +1,85 @@
 <template>
-  <div class="appStore">
-    <div id="wrapper">
-    <div>
-    <h1>{{ msg }}</h1>
-    <p>
-      Here is a list of the available Apps for your databox.
-    </p>
-    <h3>Available Apps</h3>
-    <ul v-if="apps">
-      <li v-for="item in apps" :key="item" v-on:click="installApp(item)">
-        <icon
-          v-bind:name="item"
-          v-bind:displayName="true"
-          :key="item"
-        />
-      </li>
-      <li v-for="item in drivers" :key="item" v-on:click="installApp(item)">
-        <icon
-          v-bind:name="item"
-          v-bind:displayName="true"
-          :key="item"
-        />
-      </li>
-    </ul>
-
-  </div>
-  </div>
-  </div>
+	<div id="appStore">
+		<h3>Available Apps</h3>
+		<div v-if="apps" id="appList">
+			<icon v-for="item in apps"
+			      :key="item"
+			      :name="item"
+			      :displayName="true"
+			      :banner="isInstalled(item) ? 'installed' : null"
+			      :route="isInstalled(item) ? '/view/' + item : '/install/' + item"
+			      style="margin: 8px"/>
+		</div>
+	</div>
 </template>
 <script>
-import testdata from '../testData/apps.json'
-import Icon from '../components/renderAppDriverIcon.vue'
+	import testdata from '../testData/apps.json'
+	import Icon from '../components/AppIcon.vue'
 
-export default {
-  name: 'AppStore',
-  props: {
-    msg: String,
-  },
-  components: {
-		Icon,
-	},
-  data() {
-    //get data from api later
-    return { apps: [], drivers:[], timerID: 0}
-  },
-  mounted() {
+	export default {
+		name: 'AppStore',
+		props: {
+			msg: String,
+		},
+		components: {
+			Icon,
+		},
+		data() {
+			//get data from api later
+			return {apps: [], drivers: [], installed: [], timerID: 0}
+		},
+		mounted() {
+			this.$parent.title = "Databox App Store";
+			this.$parent.backRoute = "/";
+			this.loadData();
+			this.timerID = setInterval(() => {
+				this.loadData();
+			}, 5000);
 
-    this.loadData()
-    this.timerID = setInterval(() => {
-      this.loadData();
-    }, 5000);
-  },
-  destroyed: function () {
-    clearInterval(this.timerID)
-  },
-  methods: {
-    loadData: function () {
-      this.ApiGetRequest("/core-ui/ui/api/appStore", testdata)
-      .then((data) => {
-          this.apps = data.apps;
-          this.drivers = data.drivers;
-      })
-    },
-    installApp: function (appName) {
-      this.$router.push("Install?manifest="+appName)
-    }
-  }
-}
+
+		},
+		destroyed() {
+			clearInterval(this.timerID)
+		},
+		methods: {
+			loadData: function () {
+				this.$parent.apiRequest("/core-ui/ui/api/appStore", testdata)
+					.then((data) => {
+						let appList = data.apps;
+						Array.prototype.push.apply(appList, data.drivers);
+						appList.sort((a, b) => {
+							a.localeCompare(b);
+						});
+						this.apps = appList;
+					});
+				this.$parent.apiRequest("/core-ui/ui/api/containerStatus", testdata)
+					.then((data) => {
+						this.installed = data.map(item => item.name);
+					})
+			},
+			isInstalled(app) {
+				return this.installed.indexOf(app) > -1
+			}
+		}
+	}
 
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-div {
-    display: block;
-    text-align: left;
-}
-li {
-    float: left;
-    padding: .5em;
-}
+	#appList {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	#appStore {
+		display: flex;
+		margin: 24px;
+	}
+
+	@media (max-width: 479px) {
+		#appStore {
+			margin: 16px;
+		}
+	}
 </style>
