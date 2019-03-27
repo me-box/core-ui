@@ -24,6 +24,7 @@ type config struct {
 	allManifests            libDatabox.DataSourceMetadata
 	cmStoreEndpoint         string
 	manifestStoreEndpoint   string
+	cmStoreClient           *libDatabox.CoreStoreClient
 }
 
 func main() {
@@ -48,6 +49,7 @@ func main() {
 		allManifests:            allManifests,
 		cmStoreEndpoint:         DATABOX_ZMQ_ENDPOINT_CM,
 		manifestStoreEndpoint:   DATABOX_ZMQ_ENDPOINT_APP,
+		cmStoreClient:           libDatabox.NewDefaultCoreStoreClient(DATABOX_ZMQ_ENDPOINT_CM),
 	}
 
 	//setup webserver routes
@@ -100,13 +102,13 @@ func main() {
 }
 
 //func loggingMiddleware(next http.Handler) http.Handler {
-////	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-////		// Do stuff here
-////		fmt.Println(r.Method + " " + r.RequestURI)
-////		// Call the next handler, which can be another middleware in the chain, or the final handler.
-////		next.ServeHTTP(w, r)
-////	})
-////}
+//	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//		// Do stuff here
+//		fmt.Println(r.Method + " " + r.RequestURI)
+//		// Call the next handler, which can be another middleware in the chain, or the final handler.
+//		next.ServeHTTP(w, r)
+//	})
+//}
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(r.URL.Path, "/ui/") {
