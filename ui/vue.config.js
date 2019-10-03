@@ -4,9 +4,11 @@ module.exports = {
 	css: {
 		loaderOptions: {
 			sass: {
-				includePaths: [__dirname  + '/node_modules'],
-			},
-		},
+				sassOptions: {
+					includePaths: [__dirname + '/node_modules']
+				}
+			}
+		}
 	},
 	pwa: {
 		name: 'Databox Dashboard',

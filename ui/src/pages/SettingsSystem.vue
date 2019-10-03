@@ -43,7 +43,7 @@
 		<button class="mdc-button" @click="openPasswordDialog">Change Password</button>
 		<button class="mdc-button" @click="logout">Log Out</button>
 		
-		<div><img alt="QR Code for Mobile Login" src="/core-ui/ui/api/qrcode.png"></div>
+		<div><img v-if="!isMobile"  alt="QR Code for Mobile Login" src="/core-ui/ui/api/qrcode.png"></div>
 	</div>
 </template>
 <script>
