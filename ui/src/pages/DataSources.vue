@@ -67,7 +67,6 @@
 								sourceNames.push(name);
 							}
 						});
-						console.log(sourceNames);
 						this.dataSources = sourceNames;
 					})
 			},

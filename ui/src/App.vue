@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-		<header class="mdc-top-app-bar" v-if="authenticated">
+		<header class="mdc-top-app-bar" v-if="title !== null">
 			<div class="mdc-top-app-bar__row">
 				<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
 					<a v-if="backRoute" v-on:click="back" class="material-icons mdc-top-app-bar__navigation-icon">
@@ -8,7 +8,7 @@
 					</a>
 					<span class="mdc-top-app-bar__title">{{ title }}</span>
 				</section>
-				<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
+				<section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" v-if="authenticated">
 					<router-view name="toolbar" style="display: flex"></router-view>
 					<div class="mdc-menu-surface--anchor">
 						<div class="material-icons mdc-top-app-bar__action-item" @click="openNotifications">
@@ -30,10 +30,10 @@
 
 		<div class="mdc-top-app-bar--fixed-adjust">
 			<div v-if="connecting" id="content">
-				<Spinner />
+				<Spinner/>
 			</div>
 			<div v-else id="content">
-				<router-view />
+				<router-view/>
 			</div>
 		</div>
 	</div>
@@ -42,6 +42,9 @@
 <script>
 	import {MDCMenuSurface} from '@material/menu-surface';
 	import Spinner from "./components/Spinner";
+	import testdata from './testData/status.json'
+
+	const DATABOX_URL = "databoxURL";
 
 	export default {
 		name: 'app',
@@ -50,7 +53,7 @@
 			return {
 				title: 'Databox Dashboard',
 				backRoute: null,
-				databoxUrl: "localhost",
+				databoxUrl: '',
 				connecting: true,
 				authenticated: false,
 				notifications: [],
@@ -58,8 +61,9 @@
 			}
 		},
 		created() {
-			if (localStorage.getItem("databoxUrl") !== null) {
-				this.databoxUrl = localStorage.getItem("databoxUrl");
+			const storedUrl = localStorage.getItem(DATABOX_URL);
+			if (storedUrl !== null) {
+				this.databoxUrl = storedUrl;
 			} else if (!this.isMobile) {
 				this.databoxUrl = window.location.hostname;
 			}
@@ -67,6 +71,14 @@
 				.then(() => {
 					this.connecting = false;
 					this.authenticated = true;
+					//this.$router.replace("/");
+				})
+				.catch((error) => {
+					console.log("Connect Failed");
+					console.log(error);
+					this.connecting = false;
+					this.authenticated = false;
+					this.$router.replace("/login");
 				})
 		},
 		updated() {
@@ -78,11 +90,15 @@
 		},
 		watch: {
 			title(val) {
-				document.title = val
+				if (val) {
+					document.title = val
+				} else {
+					document.title = "Databox Dashboard"
+				}
 			}
 		},
 		methods: {
-			apiRequest: function (url, cannedData, opts = {}) {
+			request(url, opts = {}) {
 				opts.credentials = 'include';
 				opts.mode = 'cors';
 				return fetch('https://' + this.databoxUrl + url, opts)
@@ -93,21 +109,57 @@
 							return response;
 						}
 					})
-					.then((response) => {
-						return response.json()
-					})
 					.catch((err) => {
 						this.connecting = false;
-						if (err.status === 401 || err.status === 404) {
+						if (err.status === 401) {
 							this.authenticated = false;
 							this.$router.replace("/login");
 							throw err;
-						} else if (this.isDev) {
-							return cannedData
 						} else {
 							throw err;
 						}
 					});
+			},
+			apiRequest(url, cannedData, opts = {}) {
+				opts.credentials = 'include';
+				opts.mode = 'cors';
+				return this.request(url, opts)
+					.then((response) => {
+						return response.json()
+					})
+					.catch((error) => {
+						if (this.isDev) {
+							return cannedData
+						} else {
+							throw error
+						}
+					});
+			},
+			async installAndWait(manifest) {
+				await this.apiRequest('/core-ui/ui/api/install', {}, {
+					method: 'POST',
+					headers: {
+						'Accept': 'application/json, text/plain, */*',
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						manifest: manifest,
+					}),
+				});
+				await this.waitForInstall(manifest.name);
+			},
+			async waitForInstall(appName) {
+				while (true) {
+					let json = await this.apiRequest('/core-ui/ui/api/containerStatus', testdata);
+					for (const app of json) {
+						if (app.name === appName) {
+							return;
+						}
+					}
+					await new Promise((resolve) => {
+						setTimeout(() => resolve(), 2000)
+					});
+				}
 			},
 			logout() {
 				this.authenticated = false;
@@ -115,8 +167,8 @@
 			},
 			login(url, password) {
 				this.databoxUrl = url;
-				localStorage.setItem('databoxURL', url);
-				return fetch('https://' + url + '/core-ui/ui/api/connect', {
+				localStorage.setItem(DATABOX_URL, url);
+				return this.request('/core-ui/ui/api/connect', {
 					method: "GET",
 					credentials: "include",
 					mode: "cors",
@@ -124,30 +176,16 @@
 						'Authorization': "Token " + password,
 					},
 				})
-					.then((response) => {
-						if (!response.ok) {
-							throw {message: response.statusText, status: response.status};
-						} else {
-							return response;
-						}
-					})
-					.then((response) => {
-						return response.text()
-					})
-					.then((body) => {
-						if (body === "connected") {
-							this.authenticated = true;
-							localStorage.setItem('databoxAuthenticated', 'true');
-							this.$router.replace("/")
-						} else {
-							return Promise.reject("Auth failed")
-						}
+					.then(() => {
+						this.authenticated = true;
+						this.$router.replace("/")
 					})
 					.catch((error) => {
 						if (this.isDev) {
 							this.authenticated = true;
 							this.$router.replace("/")
 						} else {
+							console.log(error);
 							this.authenticated = false;
 							throw error;
 						}
@@ -157,7 +195,7 @@
 				this.$router.push(this.backRoute);
 			},
 			openNotifications() {
-				if(this.notificationMenu != null && this.notifications.length > 0) {
+				if (this.notificationMenu != null && this.notifications.length > 0) {
 					this.notificationMenu.open = true;
 				}
 			}
@@ -177,6 +215,7 @@
 	@import "~@material/menu-surface/mdc-menu-surface";
 	@import "~@material/select/mdc-select";
 	@import "~@material/textfield/mdc-text-field";
+	@import "~@material/typography/mdc-typography";
 	@import "~@material/theme/mdc-theme";
 	@import "~@material/top-app-bar/mdc-top-app-bar";
 

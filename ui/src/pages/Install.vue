@@ -88,8 +88,7 @@
 				installingDriver: null,
 				installing: false,
 				selectedDataSources: new Map(),
-				selectedDataSourceCount: 0,
-				timerID: null
+				selectedDataSourceCount: 0
 			}
 		},
 		asyncComputed: {
@@ -132,15 +131,9 @@
 			allowDatasources() {
 				if (this.manifest && this.dataSources) {
 					let requiredSources = this.checkDatasource(this.dataSources);
-					console.log(requiredSources);
 					return requiredSources.length === 0;
 				}
 				return false
-			}
-		},
-		destroyed() {
-			if (this.timerID != null) {
-				clearInterval(this.timerID)
 			}
 		},
 		mounted() {
@@ -152,10 +145,6 @@
 				this.app = to.params.app;
 				this.selectedDataSources.clear();
 				this.selectedDataSourceCount = 0;
-				if (this.timerID != null) {
-					clearInterval(this.timerID);
-					this.timerID = null;
-				}
 			}
 			next()
 		},
@@ -176,83 +165,37 @@
 							arr[index].hypercat = this.selectedDataSources.get(ds["clientid"])
 						});
 					}
-					this.$parent.apiRequest('/core-ui/ui/api/install', {}, {
-						method: 'POST',
-						headers: {
-							'Accept': 'application/json, text/plain, */*',
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
-							manifest: this.manifest,
-						}),
-					})
+
+					this.$parent.installAndWait(this.manifest)
 						.then(() => {
-							this.timerID = setInterval(() => {
-								this.checkInstalled();
-							}, 1000);
+							this.$router.push("/");
 						})
 				}
 			},
 			installDriver(driver) {
 				if (this.installingDriver === null) {
 					this.installingDriver = driver.name;
-					this.$parent.apiRequest('/core-ui/ui/api/install', {}, {
-						method: 'POST',
-						headers: {
-							'Accept': 'application/json, text/plain, */*',
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
-							manifest: driver,
-						}),
-					})
-						.then(() => {
-							this.timerID = setInterval(() => {
-								this.checkDriverInstalled(driver.name);
-							}, 1000);
+					this.$parent.installAndWait(driver)
+						.then(this.checkDriverReady(driver.name))
+						.then((datasources) => {
+							this.drivers = null;
+							this.dataSources = datasources;
+							this.installingDriver = null;
 						})
 				}
 			},
-			checkInstalled() {
-				this.$parent.apiRequest('/core-ui/ui/api/containerStatus', testdata)
-					.then(json => {
-						for (const app of json) {
-							if (app.name === this.app) {
-								clearInterval(this.timerID);
-								this.$router.push("/");
-								break;
-							}
+			async checkDriverReady(driver) {
+				while (true) {
+					let datasources = await this.$parent.apiRequest('/core-ui/ui/api/dataSources', testdata);
+					for (const datasource of datasources) {
+						if (datasource.href.includes(driver)) {
+							return datasources;
 						}
+					}
+					await new Promise((resolve) => {
+						setTimeout(() => resolve(), 2000)
 					});
-			},
-			checkDriverInstalled(driver) {
-				this.$parent.apiRequest('/core-ui/ui/api/containerStatus', testdata)
-					.then(json => {
-						for (const app of json) {
-							if (app.name === driver) {
-								clearInterval(this.timerID);
-								this.checkDriverReady(driver);
-								break;
-							}
-						}
-					});
-			},
-			checkDriverReady(driver) {
-				this.timerID = setInterval(() => {
-					// TODO Timeout ==> configure
-					this.$parent.apiRequest('/core-ui/ui/api/dataSources', testdata)
-						.then((datasources) => {
-							for (const datasource of datasources) {
-								if (datasource.href.includes(driver)) {
-									clearInterval(this.timerID);
-									this.drivers = null;
-									this.dataSources = datasources;
-									this.installingDriver = null;
-									break;
-								}
-							}
-						});
-				}, 1000);
+				}
 			},
 			checkDatasource(datasource) {
 				const getValFromHypercat = (hypercat, match) => {

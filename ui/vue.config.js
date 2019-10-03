@@ -1,12 +1,14 @@
 // vue.config.js
 module.exports = {
-	baseUrl: '/core-ui/ui/',
+	publicPath: process.env.VUE_APP_BASE_URL,
 	css: {
 		loaderOptions: {
 			sass: {
-				includePaths: [__dirname  + '/node_modules'],
-			},
-		},
+				sassOptions: {
+					includePaths: [__dirname + '/node_modules']
+				}
+			}
+		}
 	},
 	pwa: {
 		name: 'Databox Dashboard',

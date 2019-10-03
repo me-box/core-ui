@@ -1,6 +1,6 @@
 <template>
 	<div id="appStore">
-		<h3>Available Apps</h3>
+		<div class="mdc-typography--headline6">Available Apps</div>
 		<div v-if="apps" id="appList">
 			<icon v-for="item in apps"
 			      :key="item"
@@ -73,8 +73,11 @@
 	}
 
 	#appStore {
-		display: flex;
 		margin: 24px;
+	}
+
+	.mdc-typography--headline6 {
+		margin: 0 8px;
 	}
 
 	@media (max-width: 479px) {

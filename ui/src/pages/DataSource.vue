@@ -75,7 +75,6 @@
 				this.deleteDialog.open();
 			}			,
 			deleteData() {
-				console.log('accepted');
 			},
 			onDecline() {
 			},

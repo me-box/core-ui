@@ -13,7 +13,8 @@
 				       autocomplete="username"
 				       :disabled="connecting"
 				       :autofocus="isMobile">
-				<label class="mdc-floating-label" for="url-field-input">Databox URL</label>
+				<label class="mdc-floating-label" :class="{ 'mdc-floating-label--float-above' : url }"
+				       for="url-field-input">Databox URL</label>
 				<div class="mdc-line-ripple"></div>
 			</div>
 			<div v-if="urlError" class="mdc-text-field-helper-text--persistent mdc-text-field-helper-text error"
@@ -37,7 +38,7 @@
 				{{ passwordError }}
 			</div>
 
-			<div v-if="connecting" style="display: flex; justify-content: center; padding: 8px">
+			<div v-if="connecting" style="display: flex; justify-content: center; padding: 16px">
 				<Spinner/>
 			</div>
 			<div v-else style="display: flex">
@@ -55,12 +56,29 @@
 
 	export default {
 		name: 'logIn',
-		props: {},
+		props: {
+			url: {
+				default: function () {
+					return this.$parent.databoxUrl;
+				},
+				type: String
+			},
+			ipList: {
+				default: [],
+				type: Array
+			},
+			password: {
+				default: null,
+				type: String
+			},
+			autoLogin: {
+				default: false,
+				type: Boolean
+			}
+		},
 		components: {Spinner},
 		data() {
 			return {
-				password: "",
-				url: "",
 				passwordError: "",
 				urlError: "",
 				connecting: false
@@ -72,11 +90,15 @@
 			}
 		},
 		mounted() {
+			this.$parent.title = null;
+			this.$parent.backRoute = null;
+
 			new MDCTextField(document.querySelector('#url-field'));
 			new MDCTextField(document.querySelector('#password-field'));
-		},
-		created() {
-			this.url = this.$parent.databoxUrl;
+
+			if (this.autoLogin) {
+				this.loginList();
+			}
 		},
 		methods: {
 			scan() {
@@ -84,9 +106,24 @@
 					this.$router.push('/scan');
 				}
 			},
+			async loginList() {
+				this.connecting = true;
+				for (const ip of this.ipList) {
+					try {
+						this.url = ip;
+						await this.$parent.login(ip, this.password);
+						return;
+					} catch (error) {
+						console.log(error);
+					}
+				}
+				this.connecting = false;
+				this.urlError = "";
+				this.passwordError = "Login Failed.";
+			},
 			login() {
 				this.connecting = true;
-				this.$parent.login(this.url, this.password)
+				return this.$parent.login(this.url, this.password)
 					.catch((error) => {
 						console.log(error);
 						this.connecting = false;

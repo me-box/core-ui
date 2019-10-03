@@ -1,6 +1,6 @@
 <template>
-	<div :class="{ 'app-icon': true, 'hover': route && !updating }" @click="goto()">
-		<div :class="{ 'app-icon-letter': true, 'material-icons': icon }">
+	<div class="app-icon" :class="{ 'hover': route && !updating }" @click="goto()">
+		<div class="app-icon-letter" :class="{ 'material-icons': icon }">
 			<svg v-if="updating" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
 				<circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30">
 				</circle>

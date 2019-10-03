@@ -57,9 +57,9 @@ func main() {
 
 	//HTTPS API
 	router.HandleFunc("/status", statusEndpoint).Methods("GET")
+	router.HandleFunc("/ui/api/connect", connect).Methods("GET")
 	router.HandleFunc("/ui/api/appStore", getApps(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/containerStatus", containerStatus(&cfg)).Methods("GET")
-	//router.HandleFunc("/ui/api/containerStatus2", containerStatus2(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/dataSources", dataSources(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/drivers/{name}", getDrivers(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/api/manifest/{name}", getManifest(&cfg)).Methods("GET")
@@ -70,6 +70,7 @@ func main() {
 	router.HandleFunc("/ui/cert.pem", certPub(&cfg)).Methods("GET")
 	router.HandleFunc("/ui/cert.der", certPubDer(&cfg)).Methods("GET")
 	router.PathPrefix("/ui/{type:css|icons|js}/").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir("./www")))).Methods("GET")
+	router.PathPrefix("/ui/{type:manifest.json|cordova.js|service-worker.js|precache-manifest.|robots.txt}").Handler(http.StripPrefix("/ui", http.FileServer(http.Dir("./www")))).Methods("GET")
 	router.PathPrefix("/ui/").Handler(http.HandlerFunc(serveIndex)).Methods("GET")
 
 	//router.Use(loggingMiddleware)
